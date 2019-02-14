@@ -161,12 +161,6 @@ limitations under the License.
 		<aside class="right-off-canvas-menu">
 			<ul class="off-canvas-list">
 				<li><label>Support</label></li>
-				<!-- REMOVE WHEN COMMITTING TO GITHUB -->
-				<? if ($this -> config -> item('ckan')): ?>
-					<li><a target="_blank" href="http://smartme-data.unime.it/">SmartME CKAN</a></li>
-				<? endif ?>
-				<!-- REMOVE WHEN COMMITTING TO GITHUB -->
-
 				<li><a target="_blank" href="http://stack4things.unime.it/">Stack4Things</a></li>
 				<li><a target="_blank" href="<?= $this -> config -> item('swagger_url')?>">API</a></li>
 				<li><a data-reveal-id="modal-show-info">Info & Credits</a></li>
