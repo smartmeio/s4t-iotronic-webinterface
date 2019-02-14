@@ -486,10 +486,10 @@ function refresh_lists(){
 			//console.log(response);
 
 			boards_list = response.message.sort(SortByStatus);
-
+console.log(boards_list)
 			connected = [];
 			disconnected = [];
-			
+
 			for(i=0;i<boards_list.length; i++){
 				if(boards_list[i].status == "C")
 					connected.push(boards_list[i]);
@@ -502,16 +502,26 @@ function refresh_lists(){
 			connected = connected.sort(SortByLabel);
 			disconnected = disconnected.sort(SortByLabel);
 
+			//SACERTIS
+			//We have to verify that the project is 
+			//---------------------------------------------------------------------------------
+			var project_name = get_project_name_by_uuid(getCookie("selected_prj"));
+			wiotp_projects = Object.keys(sensors);
+			//console.log(project_name +" "+ wiotp_projects);
+
+			if(wiotp_projects.indexOf(project_name) == -1){
+			//---------------------------------------------------------------------------------
+
 			//Previous version
-			/*
-			//document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+			
+			document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
 
-			for(j=0;j<disconnected.length;j++){
+			for(i=0;i<connected.length;i++){
 				$('#boardlist_status').append('<li>'+
-					//      '<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
-					'<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-board-info">'+
-					'<img src="'+site_url+'uploads/red-circle.png" width=20 height=20>'+
-					'<span>'+disconnected[j].label+'</span>'+
+					//      '<a href="#" onclick=populate_board_info("'+connected[i].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
+					'<a href="#" onclick=populate_board_info("'+connected[i].board_id+'"); data-reveal-id="modal-board-info">'+
+					'<img src="'+site_url+'uploads/green-circle.png" width=20 height=20>'+
+					'<span>'+connected[i].label+'</span>'+
 					'</a>'+
 					'</li>');
 			}
@@ -526,29 +536,35 @@ function refresh_lists(){
 					'</a>'+
 					'</li>');
 			}
+
+console.log(connected)
+console.log(disconnected)
+
 			//Refresh markers on the map accordingly to what is retrieved from IoTronic !!!
 			refresh_map();
-			*/
+			}
 
 
-
-
+	
 			//SACERTIS
 			//---------------------------------------------------------------------------------------------------------------
+			else {
 
 			var array_promise = [];
 			var degradated = [];
 
-			for(i=0;i<connected.length;i++){
+			for(l=0;l<connected.length;l++){
 				array_promise.push(new Promise(function(resolve){
 					//console.log("BOARD: "+connected[i].board_id);
-					verify_sensors_status(connected[i].board_id, resolve);
+					verify_sensors_status(connected[l].board_id, resolve);
 				}));
 			}
 			Promise.all(array_promise).then(function(results){
 				//console.log(results);
 
+				/*
 				for(i=0;i<results.length;i++){
+
 					if(results[i] != "NO WIOTP" && results[i] != "NO ACTION"){
 						for(j=0;j<connected.length;j++){
 							if(connected[j].board_id == results[i]){
@@ -559,26 +575,53 @@ function refresh_lists(){
 						}
 					}
 				}
+				*/
 
 
+				for(i=0;i<results.length;i++){
+					//if(results[i].status != "NO WIOTP" && results[i].status != "NO ACTION"){
+					//if(results[i].status == "CHECKED" || results[i].status == "NO ACTION"){
+						for(j=0;j<connected.length;j++){
+							if(connected[j].board_id == results[i].board_id){
 
-			
+								connected[j].failed = results[i].failed
+								connected[j].all = results[i].all
+
+								if(results[i].status == "CHECKED"){
+									degradated.push(connected[j]);
+									connected.splice(j, 1);
+								}
+								break
+							}
+						}
+					//}
+				}
+
 				for(i=0;i<connected.length;i++){
+
+					title = "All: "+connected[i].all+"\n"+"Failed: "+connected[i].failed;
+
 					$('#boardlist_status').append('<li>' +
-								//	'<a href="#" onclick=populate_board_info("'+connected[i].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
-									'<a href="#" onclick=populate_board_info("'+connected[i].board_id+'"); data-reveal-id="modal-board-info">'+
-									'<img src="'+site_url+'uploads/green-circle.png" width=20 height=20>'+
-									'<span>'+connected[i].label+'</span>'+
-								       '</li>');
+									'<a href="#" onclick="populate_board_info(\''+connected[i].board_id+'\', \'true\');" title="'+title+'" data-reveal-id="modal-board-info">'+
+										'<img src="'+site_url+'uploads/green-circle.png" width=20 height=20>'+
+									'</a>'+
+									'<a href="#" onclick="populate_board_info(\''+connected[i].board_id+'\');" title="'+title+'" data-reveal-id="modal-board-info">'+
+									'&nbsp;'+connected[i].label+'</a>'+
+								      '</li>');
 				}
 
 				for(k=0;k<degradated.length;k++){
+
+					title = "All: "+degradated[k].all+"\n"+"Failed: "+degradated[k].failed;
+
 					$('#boardlist_status').append('<li>' +
-								//      '<a href="#" onclick=populate_board_info("'+degradated[k].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
-									'<a href="#" onclick=populate_board_info("'+degradated[k].board_id+'"); data-reveal-id="modal-board-info">'+
-									'<img src="'+site_url+'uploads/yellow-circle.png" width=20 height=20>'+
-									'<span>'+degradated[k].label+'</span>'+
+									'<a href="#" onclick="populate_board_info(\''+degradated[k].board_id+'\', \'true\');" title="'+title+'" data-reveal-id="modal-board-info">'+
+										'<img src="'+site_url+'uploads/yellow-circle.png" width="20" height="20" />'+
+									'</a>'+
+									'<a href="#" onclick="populate_board_info(\''+degradated[k].board_id+'\')"; title="'+title+'"; data-reveal-id="modal-board-info">'+
+									'&nbsp;'+degradated[k].label+'</a>'+
 								      '</li>');
+
 				}
 
 				for(j=0;j<disconnected.length;j++){
@@ -592,12 +635,13 @@ function refresh_lists(){
 				}
 
 				document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/yellow-circle.png" width=20 height=20><span> '+degradated.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
-			//---------------------------------------------------------------------------------------------------------------
+
 				refresh_map();
 
 			}); //close Promise.ALL
 
-
+			//---------------------------------------------------------------------------------------------------------------
+			} //If-else in function of the presence of the project_name inside the JSON of the WIOTP projects
 		},
 		error: function(response){
 			//verify_token_expired(JSON.stringify(response.responseJSON.message));
@@ -1093,3 +1137,72 @@ function endpoints_list(endpoints, divsection, outputlist, outputclass){
 	else
 		$('#'+divsection).hide();
 }
+
+
+//TO REMOVE WHEN COMMITTING TO GITHUB
+//*******************************************************************************************
+function getDatastores(board_id, callback){
+
+	var array_sensors = ckan_params["sensors"];
+
+	$.ajax({
+		url: ckan_params["dataset_url"]+board_id,
+		dataType: 'jsonp',
+		success: function(response){
+			//console.log(response);
+
+			var array_promise = [];
+			for(i=0;i<response.resources.length;i++){
+				resource = response.resources[i];
+
+				if( resource.name != "sensors" && ($.inArray(resource.name, array_sensors)>-1) ){
+					array_promise.push(new Promise(function(resolve){
+						getLastSample(resource.name.ucfirst(), resource.id, board_id, resolve);
+					}));
+				}
+				if(i==response.resources.length-1 && array_promise.length>0){
+					Promise.all(array_promise).then(values =>{
+						callback(values)
+					});
+				}
+			}
+		},
+		error: function(response){
+			callback("ERROR No dataset");
+		}
+	});
+}
+
+
+function getLastSample(resource_name, resource_id, dataset_id, callback){
+	var json = {};
+	$.ajax({
+		url: ckan_params["datastore_search_url"],
+		dataType: 'jsonp',
+		async: false,
+		cache: true,
+		data: {"resource_id": resource_id, "limit": 1, "sort": "Date desc"},
+		success: function(response){
+			//console.log(response);
+
+			json.metric = resource_name;
+			json.resource_url = ckan_params["metric_base_url"]+dataset_id+"/resource/"+resource_id;
+
+			if(response.result.records.length>0){
+				json.value = response.result.records[0][resource_name];
+				json.timestamp = response.result.records[0]["Date"];
+			}
+			else{
+				json.value = "NaN";
+				json.timestamp = "NaN";
+			}	
+			//console.log(json);
+			callback(json);
+		},
+		error: function(response){
+			callback("ERROR No Samples");
+		}
+	});
+}
+//*******************************************************************************************
+

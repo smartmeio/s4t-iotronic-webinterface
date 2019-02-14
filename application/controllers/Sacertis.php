@@ -80,11 +80,19 @@ class Sacertis extends CI_Controller {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		curl_setopt($ch, CURLOPT_USERPWD, $username.':'.$password);
+
+		//IMPROVEMENTS
+		//curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);	// time-out on connect
+		//curl_setopt($ch, CURLOPT_TIMEOUT, 120);    	// time-out on response
+
 		$output = curl_exec($ch); 
 		curl_close($ch);    
 
 		$output = json_decode($output, true);
-		$output["threshold"] = $threshold;
+		if($output["payload"])
+			$output["threshold"] = $threshold;
+		else
+			$output["threshold"] = 9999;
 		$output = json_encode($output);
 
 		$this->output->set_output($output);

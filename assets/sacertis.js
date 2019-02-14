@@ -41,7 +41,7 @@ function get_board_sensors(uuid, callback){
 }
 
 function verify_sensors_status(uuid, callback){
-	var count = 0;
+	var failed = 0;
 
 	project_name = get_project_name_by_uuid(getCookie("selected_prj"));
 
@@ -53,22 +53,36 @@ function verify_sensors_status(uuid, callback){
                 dataType: 'json',
                 data: data,
                 success: function(response){
-			parsed = $.parseJSON(atob(response.payload))
+			if(response.payload){
+				parsed = $.parseJSON(atob(response.payload))
 
-			sensor_data = parsed.d.r.sensor_data
-			for(i=0;i<sensor_data.length;i++){
-				if(sensor_data[i].status == "NOK") count += 1;
+				sensor_data = parsed.d.r.sensor_data
+				for(i=0;i<sensor_data.length;i++){
+					if(sensor_data[i].status == "NOK")
+						failed += 1;
+				}
+
+				data = {"board_id": parsed.d.group, "failed": failed, "all": sensor_data.length};
+
+				if(failed >= response.threshold){
+					data.status = "CHECKED"
+					//callback(parsed.d.group) //returns the board_id
+				}
+				else{
+					data.status = "NO ACTION"
+					//callback("NO ACTION")
+				}
+				callback(data)
 			}
-
-			if(count > response.threshold)
-				callback(parsed.d.group) //returns the board_id
 			else
-				callback("NO ACTION")
+				callback({"board_id": uuid, "failed": "Not available", "all": "Not available", "status": "NO ACTION"})
                 },
 		error: function(response){
 			//console.log("ERROR")
 			//console.log(response)
-			callback("NO WIOTP")
+			//callback("NO WIOTP")
+
+			callback({"board_id": uuid, "failed": "Not available", "all": "Not available", "status": "NO WIOTP"})
 		}
         });
 }

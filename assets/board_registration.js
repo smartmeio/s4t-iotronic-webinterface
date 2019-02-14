@@ -1341,11 +1341,23 @@ function trigger_hover(a){
 }
 
 
-function populate_board_info(board_id){
+function populate_board_info(board_id, flag){
 //function populate_board_info(data){
 	//$('#sensors_on_board').empty();
 
-	hideall_except("info-details");
+	//SACERTIS
+	//-------------------------------------------------
+	if(flag){
+		hideall_except("info-sensors");
+	}
+	else{
+		hideall_except("info-details");
+	}
+	//-------------------------------------------------
+	//OLD
+	//hideall_except("info-details");
+
+
 
 	//OLD VERSION
 	/*
@@ -1666,6 +1678,7 @@ function populate_board_info(board_id){
 				//----------------------------------------------------------------------------------------------------------
 			},
 			error: function(response){
+console.log("ERROR");
 				verify_token_expired(response.responseJSON.message, response.responseJSON.result);
 				//alert('ERROR: '+JSON.stringify(response));
 			}

@@ -20,7 +20,8 @@ limitations under the License.
 		<title>IoTronic Admin</title>
 		<link rel="shortcut icon" type="image/png" href="<?= $this -> config -> site_url() ?>assets/images/smartmeio.png"/>
 		<link rel="stylesheet" href="<?= $this -> config -> site_url() ?>assets/bower_components/foundation/css/foundation.min.css" />
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>-->
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 		<script src="<?= $this -> config -> site_url() ?>assets/bower_components/foundation/js/vendor/modernizr.js"></script>
 
 

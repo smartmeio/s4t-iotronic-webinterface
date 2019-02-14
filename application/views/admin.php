@@ -27,6 +27,8 @@ limitations under the License.
 	//SACERTIS
 	//---------------------------------------------------------------------------------------
 	sensors_flag = "<?= $this -> config -> item('load_sensor_management')?>";
+	sensors = JSON.parse('<?= $GLOBALS['sensors']?>');
+	//console.log(sensors);
 	//---------------------------------------------------------------------------------------
 
 	security_method = "<?= $this -> config -> item('security')?>";
@@ -66,6 +68,21 @@ limitations under the License.
 			}
 		}
 	}
+
+
+	//TO REMOVE WHEN COMMITTING TO GITHUB
+	//*******************************************************************************************
+	//Load ckan parameters
+	ckan_params = [];
+	ckan = JSON.parse('[<?= json_encode($this -> config -> item('ckan'))?>]');
+	if(ckan[0] != null && ckan[0].length != 0){
+		for(key in ckan[0]){
+			//console.log(key+ " "+ckan[0][key]);
+			ckan_params[key] = ckan[0][key];
+		}
+	}
+	//console.log("CKAN: "+ckan_params["address"]+" ORG: "+ckan_params["organization"]+" AUTH_ID: "+ckan_params["m_authid"]);
+	//*******************************************************************************************
 </script>
 
 

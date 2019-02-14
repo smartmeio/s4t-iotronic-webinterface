@@ -70,10 +70,10 @@ limitations under the License.
 		</table>
 		<h3 style="text-align: center">Credits</h3>
 		<div style="vertical-align:middle; text-align:center">
-			<img src="<?= $this -> config -> site_url() ?>assets/images/smartmeio.png" width="7%" height="7%">SmartMe.IO S.r.l.
+			<img src="<?= $this -> config -> site_url() ?>assets/images/smartmeio.png" width="7%" height="7%">SmartMe.IO s.r.l. & <img src="<?= $this -> config -> site_url() .'uploads/mdslab.png'  ?>" alt="MDSLab Logo" height="40" width="80" />
 		</div><br />
-		<img src="<?= $this -> config -> site_url() ?>assets/images/foundation_svgs/fi-marker.svg" width="5%" height="5%">Dip. di Ingegneria, C/da di Dio 1, S.Agata - 98166 Messina, Italy<br />
-		<img src="<?= $this -> config -> site_url() ?>assets/images/foundation_svgs/fi-telephone.svg" width="5%" height="5%">(+39) 090-676-3644<br />
+		<img src="<?= $this -> config -> site_url() ?>assets/images/foundation_svgs/fi-marker.svg" width="5%" height="5%">Engineering Dep., C/da di Dio 1, S.Agata - 98166 Messina, Italy<br /><br />
+		<img src="<?= $this -> config -> site_url() ?>assets/images/foundation_svgs/fi-telephone.svg" width="5%" height="5%">(+39) 090-676-3644<br /><br />
 		<img src="<?= $this -> config -> site_url() ?>assets/images/foundation_svgs/fi-mail.svg" width="5%" height="5%">info@smartme.io<br />
 		<br />
 		<div style="vertical-align:middle; text-align:center">
@@ -161,9 +161,11 @@ limitations under the License.
 		<aside class="right-off-canvas-menu">
 			<ul class="off-canvas-list">
 				<li><label>Support</label></li>
+				<!-- REMOVE WHEN COMMITTING TO GITHUB -->
 				<? if ($this -> config -> item('ckan')): ?>
 					<li><a target="_blank" href="http://smartme-data.unime.it/">SmartME CKAN</a></li>
 				<? endif ?>
+				<!-- REMOVE WHEN COMMITTING TO GITHUB -->
 
 				<li><a target="_blank" href="http://stack4things.unime.it/">Stack4Things</a></li>
 				<li><a target="_blank" href="<?= $this -> config -> item('swagger_url')?>">API</a></li>
