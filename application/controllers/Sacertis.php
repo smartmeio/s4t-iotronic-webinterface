@@ -54,7 +54,7 @@ class Sacertis extends CI_Controller {
 		$username = "";
 		$password = "";
 
-		$sensors = json_decode($GLOBALS['sensors']);
+		$sensors = json_decode($GLOBALS['wiotp_endpoints']);
 		$project = $_POST['project_name'];
 
 		foreach($sensors as $key => $value){
