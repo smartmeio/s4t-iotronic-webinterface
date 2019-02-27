@@ -30,18 +30,16 @@ limitations under the License.
 <center>
 	<div class="main-fieldset login-fieldset">
 		<div class="blockstyle">
-			<div style="float: left; width: 40%; text-align: center">
+			<div style="float: left; width: 50%; text-align: center">
 				<a href="http://smartme.io/it/" target="_blank">
-					<img src="<?= $this -> config -> site_url() ?>uploads/smartmeio_name.png" width="80%" height="80%">
+					<img src="<?= $this -> config -> site_url() ?>uploads/smartmeio_name.png" width="70%" height="70%">
 				</a>
 			</div>
-			<div style="float: right; width: 50%;">
+			<div style="float: right; width: 49%;">
 				Username<input type="text" id="username" name="username" value="admin">
 				Password<input type="password" id="password" name="password" value="">
+				<button class="custom_button" style="float: none" onclick="login();">Login</button>
 			</div>
-		</div>
-		<div class="blockstyle" style="margin: 0px; padding: 0px">
-			<button class="custom_button" style="float: none" onclick="login();">Login</button>
 		</div>
 		<? if(isset($success) && $success == "ERROR") : ?>
 		<div>

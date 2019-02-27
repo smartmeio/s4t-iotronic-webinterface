@@ -553,7 +553,8 @@ function refresh_lists(){
 			for(l=0;l<connected.length;l++){
 				array_promise.push(new Promise(function(resolve){
 					//console.log("BOARD: "+connected[i].board_id);
-					verify_sensors_status(connected[l].board_id, resolve);
+					//verify_sensors_status(connected[l].board_id, resolve);
+					verify_sensors_status(connected[l].board_id, connected[l].model, resolve);
 				}));
 			}
 			Promise.all(array_promise).then(function(results){

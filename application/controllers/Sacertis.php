@@ -59,7 +59,8 @@ class Sacertis extends CI_Controller {
 
 		foreach($sensors as $key => $value){
 			if ($key == $project){
-				$kit_type = $value->wiotp_kit_type;
+				//$kit_type = $value->wiotp_kit_type;
+				$kit_type = $_POST['model'];
 				$endpoint = $value->wiotp_endpoint;
 				$event_type = $value->wiotp_event_type;
 				$threshold = $value->wiotp_threshold_sensors;
@@ -86,8 +87,8 @@ class Sacertis extends CI_Controller {
 		//curl_setopt($ch, CURLOPT_TIMEOUT, 120);    	// time-out on response
 
 		$output = curl_exec($ch); 
-		curl_close($ch);    
-
+		curl_close($ch);
+ 
 		$output = json_decode($output, true);
 		if($output["payload"])
 			$output["threshold"] = $threshold;

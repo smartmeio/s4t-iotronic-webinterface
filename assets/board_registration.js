@@ -1740,7 +1740,8 @@ function populate_board_info(board_id, flag){
 
 					var array_promise = [];
 					array_promise.push(new Promise(function(resolve){
-						get_board_sensors(board_id, resolve)
+						//get_board_sensors(board_id, resolve)
+						get_board_sensors(board_id, info.model, resolve)
 					}));
 
 					Promise.all(array_promise).then(function(results){
@@ -1761,7 +1762,7 @@ function populate_board_info(board_id, flag){
 						}
 						else{
 							$('#sensors_device').html('<b>Device: </b>'+results[0].deviceId);
-							$('#sensors_type').html('<b>Type: </b>'+results[0].typeId);
+							$('#sensors_model').html('<b>Model: </b>'+results[0].typeId);
 							$('#sensors_timestamp').html('<b>Timestamp: </b>'+results[0].timestamp);
 
 							sensors = response.message.sensors.sort(SortBySensPos);
@@ -1860,12 +1861,13 @@ $('#sensors_status').on('change',
 
 		//NEW WIOTP VERSION
 		var id = this.getAttribute("id");
-		uuid = $("#info-uuid").text().replace('UUID: ', '')
-
+		uuid = $("#info-uuid").text().replace('ID: ', '')
+		model = $("#sensors_model").text().replace('Model: ', '')
 
 		var array_promise = [];
 		array_promise.push(new Promise(function(resolve){
-			get_board_sensors(uuid, resolve)
+			//get_board_sensors(uuid, resolve)
+			get_board_sensors(uuid, model, resolve)
 		}));
 
 		Promise.all(array_promise).then(function(results){

@@ -10,11 +10,13 @@ function test_wiotp(){
 }
 
 
-function get_board_sensors(uuid, callback){
+//function get_board_sensors(uuid, callback){
+function get_board_sensors(uuid, model, callback){
 
 	project_name = get_project_name_by_uuid(getCookie("selected_prj"));
 
-	data = {'uuid': uuid, 'project_name': project_name};
+	//data = {'uuid': uuid, 'project_name': project_name};
+	data = {'uuid': uuid, 'model': model, 'project_name': project_name};
 
 	$.ajax({
 		url: site_url+'Sacertis/get_board_sensors',
@@ -22,7 +24,7 @@ function get_board_sensors(uuid, callback){
 		dataType: 'json',
 		data: data,
 		success: function(response){
-//console.log(response)
+
 			if(response.payload){
 				parsed = $.parseJSON(atob(response.payload))
 				sensor_data = parsed.d.r.sensor_data
@@ -34,18 +36,19 @@ function get_board_sensors(uuid, callback){
 				callback("OK")
 		},
 		error: function(response){
-//console.log(response)
 			callback("NO WIOTP")
 		}
 	});
 }
 
-function verify_sensors_status(uuid, callback){
+//function verify_sensors_status(uuid, callback){
+function verify_sensors_status(uuid, model, callback){
 	var failed = 0;
 
 	project_name = get_project_name_by_uuid(getCookie("selected_prj"));
 
-	data = {'uuid': uuid, 'project_name': project_name};
+	//data = {'uuid': uuid, 'project_name': project_name};
+	data = {'uuid': uuid, 'model': model, 'project_name': project_name};
 
         $.ajax({
                 url: site_url+'Sacertis/get_board_sensors',
