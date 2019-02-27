@@ -27,8 +27,8 @@ limitations under the License.
 	//SACERTIS
 	//---------------------------------------------------------------------------------------
 	sensors_flag = "<?= $this -> config -> item('load_sensor_management')?>";
-	sensors = JSON.parse('<?= $GLOBALS['sensors']?>');
-	//console.log(sensors);
+	wiotp_endpoints = JSON.parse('<?= $GLOBALS['wiotp_endpoints']?>');
+	//console.log(wiotp_endpoints);
 	//---------------------------------------------------------------------------------------
 
 	security_method = "<?= $this -> config -> item('security')?>";
@@ -68,7 +68,6 @@ limitations under the License.
 			}
 		}
 	}
-
 </script>
 
 

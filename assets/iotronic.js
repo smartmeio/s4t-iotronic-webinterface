@@ -506,7 +506,7 @@ function refresh_lists(){
 			//We have to verify that the project is 
 			//---------------------------------------------------------------------------------
 			var project_name = get_project_name_by_uuid(getCookie("selected_prj"));
-			wiotp_projects = Object.keys(sensors);
+			wiotp_projects = Object.keys(wiotp_endpoints);
 			//console.log(project_name +" "+ wiotp_projects);
 
 			if(wiotp_projects.indexOf(project_name) == -1){
