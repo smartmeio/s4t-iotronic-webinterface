@@ -55,12 +55,14 @@ limitations under the License.
 		<td valign="top" style="width: 80%; overflow-y: scroll;">
 			<div id="info-container">
 				<div id="info-details">
-					<h4><b>Details</b></h4>
+					<!--<div id="info-latest-update"></div>-->
+					<!--
 					<table class="table_info">
 					<tr>
 						<td>
 							<div id="info-label"></div>
 							<div id="info-uuid"></div>
+							<div id="info-conn-time"></div>
 							<div id="info-description"></div>
 							<div id="info-lr_version"></div>
 							<div id="info-user"></div>
@@ -78,6 +80,53 @@ limitations under the License.
 						</td>
 					</tr>
 					</table>
+					-->
+					<div style="text-align:left;">
+						<div style="width: 49%; text-align:left; vertical-align: top; display: inline-block;">
+							<div id="info-detail_label"></div>
+							<div id="info-label"></div>
+							<div id="info-uuid"></div>
+						</div>
+						<div style="width: 50%; text-align:left; vertical-align: top; display: inline-block;">
+							<br /><br />
+							<div id="info-description_label"></div>
+							<textarea id="info-description" rows="3" style="resize: vertical" readonly></textarea>
+						</div>
+					</div>
+
+
+					<div style="text-align:left; margin-bottom: 15px;">
+						<div style="width: 49%; text-align:left; vertical-align: top; display: inline-block;">
+							<div id="info-status_label"></div>
+							<div id="info-lr_version"></div>
+							<div id="info-conn-time"></div>
+							<div id="info-connectivity"></div>
+						</div>
+						<div style="width: 50%; text-align:left; vertical-align: top; display: inline-block;">
+							<div id="info-coordinates_label"></div>
+							<div id="info-lat"></div>
+							<div id="info-lon"></div>
+							<div id="info-alt"></div>
+							<div id="info-timestamp"></div>
+						</div>
+					</div>
+
+
+					<div style="text-align:left; margin-bottom: 15px;">
+						<div style="width: 49%; text-align:left; vertical-align: top; display: inline-block;">
+							<div id="info-device_label"></div>
+							<div id="info-layout"></div>
+							<div id="info-model"></div>
+							<div id="info-manufacturer"></div>
+							<div id="info-image"></div>
+						</div>
+						<div style="width: 50%; text-align:left; vertical-align: top; display: inline-block;">
+							<div id="info-association_label"></div>
+							<div id="info-user"></div>
+							<div id="info-project"></div>
+						</div>
+					</div>
+
 					<div class="mini_map" id="info-map" style="width: 100%; height: 100%"></div>
 				</div>
 
@@ -99,6 +148,7 @@ limitations under the License.
 					</table>
 					-->
 					<table class="table_info">
+						<!--
 						<tr>
 							<td style="width: 18%;">
 								<input type="checkbox" id="info_mobile_enabled"><label>Mobile</label></input>
@@ -115,6 +165,7 @@ limitations under the License.
 								<textarea placeholder="" name="" rows="2" readonly>This flag indicates if a board could exploit the network functionalities.</textarea>
 							</td>
 						</tr>
+						-->
 						<tr>
 							<td style="width: 18%;">
 								<input type="checkbox" id="info_notify_enabled"><label>Notify</label></input>
@@ -352,6 +403,16 @@ limitations under the License.
 			<label>Description</label>
 			<textarea id="board_create_description" placeholder="Description" name="text" rows="2"></textarea>
 
+			<label>Connectivity</label>
+			<div style="text-align:center;">
+				<div style="width: 33%; text-align:center; vertical-align: top; display: inline-block;">
+					<select id="board_create_connectivity"></select>
+				</div>
+				<div style="width: 66%; text-align:center; vertical-align: top; display: inline-block;">
+					<input id="board_create_conn_metadata" placeholder="MAC" value="" />
+				</div>
+			</div>
+
 			<label>Layout</label>
 			<select id="board_create_layout">
 				<option value="--">--</option>
@@ -381,6 +442,7 @@ limitations under the License.
 				</tr>
 			</table>
 
+			<!--
 			<table class="table_info">
 				<tr>
 					<td style="width: 50%; text-align:center; padding: 0px">
@@ -398,6 +460,7 @@ limitations under the License.
 				<option value="false">False</option>
 				<option value="true">True</option>
 			</select>
+			-->
 
 			<label>Extra user defined data (json)</label>
 			<!--<input id="board_create_extra" type="text" placeholder="Extra" value="" /> -->
@@ -537,6 +600,16 @@ limitations under the License.
 				<label>Description</label>
 				<textarea id="board_update_description" placeholder="Description" name="text" rows="2"></textarea>
 
+				<label>Connectivity</label>
+				<div style="text-align:center;">
+					<div style="width: 33%; text-align:center; vertical-align: top; display: inline-block;">
+						<select id="board_update_connectivity"></select>
+					</div>
+					<div style="width: 66%; text-align:center; vertical-align: top; display: inline-block;">
+						<input id="board_update_conn_metadata" placeholder="MAC" value="" />
+					</div>
+				</div>
+
 				<label>Layout</label>
 				<select id="board_update_layout">
 					<option value="--">--</option>
@@ -566,6 +639,7 @@ limitations under the License.
 					</tr>
 				</table>
 
+				<!--
 				<table class="table_info">
 					<tr>
 						<td style="width: 50%; text-align:center; padding: 0px">
@@ -577,12 +651,12 @@ limitations under the License.
 					</tr>
 				</table>
 
-
 				<label>Net enabled</label>
 				<select id="board_update_net_enabled">
 					<option value="false">False</option>
 					<option value="true">True</option>
 				</select>
+				-->
 
 				<label>Extra user defined data (json)</label>
 				<input type="file" name="board_update_extrafile" id="board_update_extrafile" size="20" />

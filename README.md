@@ -16,8 +16,8 @@ Before launching the script ```install_dash.sh``` set the ```flag_ssl``` variabl
 
 # Manual installation and configuration
 If the automatic installation above didn't complete correctly you can do the same steps manually following these steps.
-* Install some libraries: ```apt-get install php5 libapache2-mod-php5 php5-curl``` (or ```apt-get install php7.3 php7.3-common php7.3-cli php7.3-curl php7.3-json php7.3-opcache php7.0-readline libapache2-mod-php7.3``` in recent releases)
-* Enable the rewrite Apache module: ```a2enmod rewrite```
+* Install some libraries: ```apt-get install php5 libapache2-mod-php5 php5-curl``` (or ```apt-get install php7.3 php7.3-common php7.3-cli php7.3-curl php7.3-json php7.3-opcache php7.3-readline libapache2-mod-php7.3``` in recent releases)
+* Enable the rewrite and headers Apache module: ```a2enmod rewrite && a2enmod headers```
 * Append the following lines in the Apache config file: ```/etc/apache2/sites-enabled/000-default.conf```
 ```
 <Directory "/var/www/html">
@@ -25,7 +25,7 @@ If the automatic installation above didn't complete correctly you can do the sam
 </Directory>
 ```
 * Restart Apache service: ```service apache2 restart```
-* Verify Apache needed modules: ```apache2ctl -M``` (verify the presence of the following lines: ```php<version>_module (shared)``` and ```rewrite_module (shared)```)
+* Verify Apache needed modules: ```apache2ctl -M``` (verify the presence of the following lines: ```php<version>_module (shared)```, ```headers_module (shared)``` and ```rewrite_module (shared)```)
 * Modify "short_open_tag" option from "Off" to "On": ```vim /etc/php5/apache2/php.ini``` (or ```vim /etc/php/7.3/apache2/php.ini``` in recent releases)
 
 ### OPTIONAL (SSL for https connection)
@@ -33,6 +33,17 @@ If the automatic installation above didn't complete correctly you can do the sam
 * Modify ```SSLCertificateFile``` and ```SSLCertificateKeyFile``` in the following Apache conf file: ```/etc/apache2/sites-available/default-ssl.conf``` adding the corresponding paths
 * ```service apache2 restart```
 * Verify if the module ```ssl_module (shared)``` is loaded.
+
+
+### OPTIONAL (hardening improvements)
+Add the following lines at the end of the apache2.conf (or older httpd.conf):
+```
+ServerSignature Off
+ServerTokens Prod
+Header set X-XSS-Protection "1; mode=block"
+Header set X-Content-Type-Options nosniff
+Header always set Strict-Transport-Security "max-age=31536000; includeSubdomains; preload"
+```
 
 
 ### CodeIgniter

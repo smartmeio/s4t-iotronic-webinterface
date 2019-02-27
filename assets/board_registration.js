@@ -34,7 +34,8 @@ document.getElementById('board_update_extrafile').element_id = "board_update_ext
 $('[data-reveal-id="modal-show-boards"]').on('click',
 	function() {
 
-		var fields_to_show = ["label", "status", "latest_update", "mobile", "net_enabled", "notify", "board_id"];
+		//var fields_to_show = ["label", "status", "latest_update", "mobile", "net_enabled", "notify", "board_id"];
+		var fields_to_show = ["label", "status", "latest_update", "notify", "board_id"];
 
 		$.ajax({
 			url: s4t_api_url+"/boards",
@@ -64,7 +65,7 @@ $('[data-reveal-id="modal-register-new-board"]').on('click',
 		$('#board_create_extrafile').val('');
 
 		$('#board_create_notify_section').hide();
-		$('#board_create_refresh_coordinates').hide();
+		//$('#board_create_refresh_coordinates').hide();
 
 		document.getElementById("board_create-output").innerHTML = '';
 
@@ -78,9 +79,17 @@ $('[data-reveal-id="modal-register-new-board"]').on('click',
 
 		document.getElementById('board_create_extra').value = "";
 
-		document.getElementById("board_create_mobile_enabled").checked = false;
-		$("#board_create_net_enabled").val("false");
+		//document.getElementById("board_create_mobile_enabled").checked = false;
+		//$("#board_create_net_enabled").val("false");
 		$("#board_create_notify_enabled").val("false");
+
+		//Connectivities
+		var connectivities = ["ethernet", "mobile", "wifi"]
+		var conn_types = ["2", "3", "1"]
+
+		$('#board_create_connectivity').empty();
+		for(i=0;i<connectivities.length;i++)
+			$('#board_create_connectivity').append('<option title="'+connectivities[i]+'" value="'+conn_types[i]+'" data-unit="">'+connectivities[i].ucfirst()+'</option>');
 
 
 		//Security fields cleaning
@@ -257,19 +266,44 @@ $('[id="board_update_notify_enabled"]').on('change',
 );
 
 
-
+/*
 $('[id="board_create_mobile_enabled"]').on('change',
 	function(){
 		if(this.checked){ 	$('#board_create_refresh_coordinates').show(); }
 		else if(!this.checked){ $('#board_create_refresh_coordinates').hide(); }
 	}
 );
-
+*/
 
 $('[id="board_update_mobile_enabled"]').on('change',
 	function(){
 		if(this.checked){       $('#board_update_refresh_coordinates').show(); }
 		else if(!this.checked){ $('#board_update_refresh_coordinates').hide(); }
+	}
+);
+
+
+$('[id="board_create_connectivity"]').on('change',
+	function(){
+		//ethernet = 2, mobile = 3, wifi = 1
+		var conn = $('#board_create_connectivity option:selected').val();
+
+		if(conn == 1 || conn == 2)
+			$('#board_create_conn_metadata').attr('placeholder','MAC');
+		else if(conn == 3)
+			$('#board_create_conn_metadata').attr('placeholder','ICCID');
+	}
+);
+
+$('[id="board_update_connectivity"]').on('change',
+	function(){
+		//ethernet = 2, mobile = 3, wifi = 1
+		var conn = $('#board_update_connectivity option:selected').val();
+
+		if(conn == 1 || conn == 2)
+			$('#board_update_conn_metadata').attr('placeholder','MAC');
+		else if(conn == 3)
+			$('#board_update_conn_metadata').attr('placeholder','ICCID');
 	}
 );
 //----------------------------------------------------------------------------------------
@@ -340,6 +374,26 @@ $('[id="update_boardlist"]').on('change',
 						document.getElementById("board_update_longitude").value = info.coordinates.longitude;
 						document.getElementById("board_update_altitude").value = info.coordinates.altitude;
 
+						//Connectivities
+						var connectivities = ["ethernet", "mobile", "wifi"]
+						var conn_types = ["2", "3", "1"]
+
+						$('#board_update_connectivity').empty();
+						for(i=0;i<connectivities.length;i++)
+							$('#board_update_connectivity').append('<option title="'+connectivities[i]+'" value="'+conn_types[i]+'" data-unit="">'+connectivities[i].ucfirst()+'</option>');
+
+						if(response.message.connectivity.length>0){
+							metadata = JSON.parse(response.message.connectivity[0].metadata)
+							type = Object.keys(metadata)[0]
+							value = metadata[type]
+
+							$("#board_update_connectivity option[value='"+response.message.connectivity[0].conn_id+"']").prop('selected', true);
+							$('#board_update_conn_metadata').attr('placeholder',type);
+							document.getElementById("board_update_conn_metadata").value = value
+						}
+						
+
+						/*
 						if(info.mobile == 1){
 							document.getElementById("board_update_mobile_enabled").checked = true;
 							$('#board_update_refresh_coordinates').show();
@@ -348,7 +402,7 @@ $('[id="update_boardlist"]').on('change',
 							$('#board_update_refresh_coordinates').hide();
 
 						document.getElementById("board_update_refresh_position").value = info.position_refresh_time;
-
+						*/
 
 						document.getElementById("board_update_extra").value = JSON.stringify(info.extra);
 
@@ -501,6 +555,28 @@ $('#create-board').click(function(){
 		data.extra = extra;
 		data.description = description;
 
+
+		//Connectivity
+		selected_conn = $('#board_create_connectivity option:selected').val();
+		conn_metadata = document.getElementById("board_create_conn_metadata").value;
+
+		if(conn_metadata != ""){
+			obj = {}
+			if(selected_conn == 1 || selected_conn == 2)
+				obj = {"MAC": conn_metadata}
+			else if(selected_conn == 3)
+				obj = {"ICCID": conn_metadata}
+		
+			data.connectivity = JSON.stringify([{"type": selected_conn, "main": true, "metadata": obj}])
+		}
+
+		//NEW
+		data.mobile = "false"
+		data.net_enabled = "false"
+		data.position_refresh_time = 10;
+
+		//OLD
+		/*
 		data.mobile = $("#board_create_mobile_enabled").is(":checked").toString();
 
 		if(data.mobile == "true"){
@@ -511,6 +587,8 @@ $('#create-board').click(function(){
 			data.position_refresh_time = 10;
 
 		data.net_enabled = document.getElementById("board_create_net_enabled").value;
+		*/
+
 		
 		data.notify = document.getElementById("board_create_notify_enabled").value;
 
@@ -682,10 +760,32 @@ $('#update-board').click(function(){
 
 		data.description = description;
 
+		//Connectivity
+		selected_conn = $('#board_update_connectivity option:selected').val();
+		conn_metadata = document.getElementById("board_update_conn_metadata").value;
+
+		if(conn_metadata != ""){
+			obj = {}
+			if(selected_conn == 1 || selected_conn == 2)
+				obj = {"MAC": conn_metadata}
+			else if(selected_conn == 3)
+				obj = {"ICCID": conn_metadata}
+		
+			data.connectivity = JSON.stringify([{"type": selected_conn, "main": true, "metadata": obj}])
+		}
+
+		//NEW
+		data.mobile = "false"
+		data.net_enabled = "false"
+		data.position_refresh_time = 10;
+		
+		//OLD
+		/*
 		data.mobile = $("#board_update_mobile_enabled").is(":checked").toString();
 		data.position_refresh_time = document.getElementById("board_update_refresh_position").value;
 
 		data.net_enabled = document.getElementById("board_update_net_enabled").value;
+		*/
 
 		data.notify = document.getElementById("board_update_notify_enabled").value;
 		data.notify_rate = document.getElementById("board_update_notify_rate").value;
@@ -781,7 +881,6 @@ $('#delete_board').click(function(){
 
 							success: function(response){
 								if(i==variables.length-1) {
-console.log("S");
 									refresh_tableboards("delete_tableboards", "remove", null, null);
 									refresh_lists();
 									document.getElementById('loading_bar').style.visibility='hidden';
@@ -1383,33 +1482,76 @@ function populate_board_info(board_id, flag){
 				if (info.lr_version != "null" && info.lr_version != undefined)	label_lr = info.lr_version;
 				else label_lr = "Unknown";
 
-				$('#info-label').html('<b>Label: </b>'+info.label);
-				$('#info-uuid').html('<b>UUID: </b>'+info.board_id);
-				$('#info-description').html('<b>Description: </b>'+info.description);
-				//$('#info-lr_version').html('<b>Lightning-rod version: </b>'+info.lr_version);
-				$('#info-lr_version').html('<b>Lightning-rod version: </b>'+label_lr);
+				if(info.status == "C")  conn_status = "Last connection: "
+				else if(info.status == "D")  conn_status = "Last disconnection: "
+
+				//Connectivities
+				var connectivities = ["ethernet", "mobile", "wifi"]
+				var conn_types = ["2", "3", "1"]
+				connectivity = response.message.connectivity
+				conn_1 = ""
+				conn_2 = ""
+				if(connectivity.length != 0){
+					metadata = JSON.parse(connectivity[0].metadata)
+					type = Object.keys(metadata)[0]
+					value = metadata[type]
+
+					for(i=0;i<conn_types.length;i++){
+						if(conn_types[i] == connectivity[0].conn_id){
+							conn_1 = "[ "+connectivities[i].ucfirst()+" ] "
+							conn_2 = "-  "+type+": "+value
+							break
+						}
+					}
+				}
+				else{
+					conn_1 = null
+					conn_2 = ""
+				}
 
 				$('#info_extras_json').text(JSON.stringify(info.extra, undefined, 4));
 
+
+				$('#info-detail_label').html('<h5><b>Details</b></h5>');
+				$('#info-label').html('<b>Label: </b>'+info.label);
+				$('#info-uuid').html('<b>ID: </b>'+info.board_id);
+
+
+				$('#info-status_label').html('<h5><b>Status</b></h5>');
+				$('#info-lr_version').html('<b>Lightning-rod version: </b>'+label_lr);
+				$('#info-conn-time').html('<b>'+conn_status+'</b>'+info.conn_time);
+				$('#info-connectivity').html('<b>Connectivity: </b>'+conn_1+'<br />&nbsp'+conn_2)
+
+
+				$('#info-description_label').html('<b>Description</b>');
+				$('#info-description').text(info.description);
+
+
+				$('#info-association_label').html('<h5><b>Association</b></h5>');
 				$('#info-user').html('<b>User: </b>'+info.user);
 				$('#info-project').html('<b>Project: </b>'+info.project);
+
+
+				$('#info-device_label').html('<h5><b>Device Layout</b></h5>');
 				$('#info-model').html('<b>Model: </b>'+info.model);
 				$('#info-layout').html('<b>IoTronic Layout: </b>'+info.layout);
 				$('#info-manufacturer').html('<b>Manufacturer: </b>'+info.manufacturer);
 				$('#info-image').html('<b>Image: </b>'+info.image);
 
+
+				$('#info-coordinates_label').html('<h5><b>Geolocalization</b></h5>');
 				$('#info-lat').html('<b>Latitude: </b>'+info.coordinates.latitude);
 				$('#info-lon').html('<b>Longitude: </b>'+info.coordinates.longitude);
 				$('#info-alt').html('<b>Altitude: </b>'+info.coordinates.altitude);
-				$('#info-timestamp').html('<b>@ </b>'+info.coordinates.timestamp);
+				$('#info-timestamp').html('<b>Updated: </b>'+info.coordinates.timestamp);
 				boardinfo_map(info.status, info.coordinates.latitude, info.coordinates.longitude);
 
-				if(info.mobile == 1)		document.getElementById("info_mobile_enabled").checked = true;
-				if(info.net_enabled == 1)	document.getElementById("info_net_enabled").checked = true;
+				//if(info.mobile == 1)		document.getElementById("info_mobile_enabled").checked = true;
+				//if(info.net_enabled == 1)	document.getElementById("info_net_enabled").checked = true;
 				if(info.notify == 1)		document.getElementById("info_notify_enabled").checked = true;
 
-				document.getElementById("info_mobile_enabled").disabled = "disabled";
-				document.getElementById("info_net_enabled").disabled = "disabled";
+				//document.getElementById("info_mobile_enabled").disabled = "disabled";
+				//document.getElementById("info_net_enabled").disabled = "disabled";
 				document.getElementById("info_notify_enabled").disabled = "disabled";
 
 				/*

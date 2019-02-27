@@ -486,7 +486,7 @@ function refresh_lists(){
 			//console.log(response);
 
 			boards_list = response.message.sort(SortByStatus);
-console.log(boards_list)
+
 			connected = [];
 			disconnected = [];
 
@@ -536,9 +536,6 @@ console.log(boards_list)
 					'</a>'+
 					'</li>');
 			}
-
-console.log(connected)
-console.log(disconnected)
 
 			//Refresh markers on the map accordingly to what is retrieved from IoTronic !!!
 			refresh_map();
