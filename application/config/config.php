@@ -4,9 +4,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 //Iotronic Endpoints
 $default_api_address = '<IP_OR_HOSTNAME>:<PORT>';
-//$default_iotronic_address = 'iotronic.dev.smartme.io';
 $default_iotronic_address = '<IP_OR_HOSTNAME>';
-$default_wstun_address = '<IP_OR_HOSTNAME>:<PORT>';
+$default_wstun_address = '<IP_OR_HOSTNAME>';
 
 //OpenstreetMap Endpoint
 $config['map_url'] = 'https://{s}.tile.openstreetmap.org/';
