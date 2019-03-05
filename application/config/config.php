@@ -4,13 +4,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 //Iotronic Endpoints
 $default_api_address = '<IP_OR_HOSTNAME>:<PORT>';
+//$default_iotronic_address = 'iotronic.dev.smartme.io';
 $default_iotronic_address = '<IP_OR_HOSTNAME>';
-$default_wstun_address = '<IP_OR_HOSTNAME>';
+$default_wstun_address = '<IP_OR_HOSTNAME>:<PORT>';
 
 //OpenstreetMap Endpoint
-//$config['map_url'] = 'http://{s}.tile.osm.org/';
 $config['map_url'] = 'https://{s}.tile.openstreetmap.org/';
-
 
 $api_address = !empty(getenv('API_PUB_IP')) ? getenv('API_PUB_IP') : $default_api_address;
 $iotronic_address = !empty(getenv('IOTRONIC_PUB_IP')) ? getenv('IOTRONIC_PUB_IP') : $default_iotronic_address;
@@ -36,15 +35,18 @@ $config['s4t_iotronic_folder'] = '/var/lib/iotronic/';
 //Security method (basic, certificate, password)
 $config['security'] = 'password'; 
 
+//Mobile status
+$GLOBALS['mobile_api'] = str_replace("'",'"', getenv('MOBILE_API'));
+
 
 //Commands management
 //-------------------------------------------------------------------------
 $config['load_cloud_services_management'] = TRUE;
 $config['load_plugin_management'] = TRUE;
-$config['load_network_management'] = TRUE;
+$config['load_network_management'] = FALSE;
 $config['load_gpio_management'] = TRUE;
-$config['load_driver_management'] = TRUE;
-$config['load_vfs_management'] = TRUE;
+$config['load_driver_management'] = FALSE;
+$config['load_vfs_management'] = FALSE;
 
 $config['load_sensor_management'] = TRUE; //SACERTIS
 

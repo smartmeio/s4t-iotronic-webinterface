@@ -27,6 +27,36 @@ function generate_uuid(input_id){
 	$('#'+input_id).val(id);
 }
 
+function convert_date(date) {
+
+	var date = date; //new Date();
+	var aaaa = date.getFullYear();
+	var gg = date.getDate();
+	var mm = (date.getMonth() + 1);
+
+	if (gg < 10) gg = "0" + gg;
+	if (mm < 10) mm = "0" + mm;
+	var cur_day = aaaa + "-" + mm + "-" + gg;
+
+	var hours = date.getHours()
+	var minutes = date.getMinutes()
+	var seconds = date.getSeconds();
+
+	if (hours < 10) hours = "0" + hours;
+	if (minutes < 10) minutes = "0" + minutes;
+	if (seconds < 10) seconds = "0" + seconds;
+
+	return cur_day + " " + hours + ":" + minutes + ":" + seconds;
+}
+
+function compare_dates(a, b){
+	var a = new Date(a)
+	var b = new Date(b)
+
+	if(a.getTime() > b.getTime()) return false
+	else return true
+}
+
 function verify_new_version(new_version, old_version){
 	var array_old = old_version.split('.');
 	var array_new = new_version.split('.');
@@ -148,6 +178,12 @@ function SortByTimestamp(x,y) {
 function SortBySensPos(x,y) {
 	return ((x.sens_pos == y.sens_pos) ? 0 : ((x.sens_pos > y.sens_pos) ? 1 : -1 ));
 
+}
+function SortByLast(x,y) {
+	return ((x.last == y.last) ? 0 : ((x.last < y.last) ? 1 : -1 ));
+}
+function SortByOldest(x,y) {
+	return ((x.last == y.last) ? 0 : ((x.last > y.last) ? 1 : -1 ));
 }
 //-------------------------------------------------------------------------------------------
 
@@ -585,7 +621,8 @@ function refresh_lists(){
 								connected[j].failed = results[i].failed
 								connected[j].all = results[i].all
 
-								if(results[i].status == "CHECKED"){
+								//if(results[i].status == "CHECKED"){
+								if(results[i].status == "CHECKED" || results[i].valid == false){
 									degradated.push(connected[j]);
 									connected.splice(j, 1);
 								}
@@ -1135,3 +1172,72 @@ function endpoints_list(endpoints, divsection, outputlist, outputclass){
 	else
 		$('#'+divsection).hide();
 }
+
+
+//TO REMOVE WHEN COMMITTING TO GITHUB
+//*******************************************************************************************
+function getDatastores(board_id, callback){
+
+	var array_sensors = ckan_params["sensors"];
+
+	$.ajax({
+		url: ckan_params["dataset_url"]+board_id,
+		dataType: 'jsonp',
+		success: function(response){
+			//console.log(response);
+
+			var array_promise = [];
+			for(i=0;i<response.resources.length;i++){
+				resource = response.resources[i];
+
+				if( resource.name != "sensors" && ($.inArray(resource.name, array_sensors)>-1) ){
+					array_promise.push(new Promise(function(resolve){
+						getLastSample(resource.name.ucfirst(), resource.id, board_id, resolve);
+					}));
+				}
+				if(i==response.resources.length-1 && array_promise.length>0){
+					Promise.all(array_promise).then(values =>{
+						callback(values)
+					});
+				}
+			}
+		},
+		error: function(response){
+			callback("ERROR No dataset");
+		}
+	});
+}
+
+
+function getLastSample(resource_name, resource_id, dataset_id, callback){
+	var json = {};
+	$.ajax({
+		url: ckan_params["datastore_search_url"],
+		dataType: 'jsonp',
+		async: false,
+		cache: true,
+		data: {"resource_id": resource_id, "limit": 1, "sort": "Date desc"},
+		success: function(response){
+			//console.log(response);
+
+			json.metric = resource_name;
+			json.resource_url = ckan_params["metric_base_url"]+dataset_id+"/resource/"+resource_id;
+
+			if(response.result.records.length>0){
+				json.value = response.result.records[0][resource_name];
+				json.timestamp = response.result.records[0]["Date"];
+			}
+			else{
+				json.value = "NaN";
+				json.timestamp = "NaN";
+			}	
+			//console.log(json);
+			callback(json);
+		},
+		error: function(response){
+			callback("ERROR No Samples");
+		}
+	});
+}
+//*******************************************************************************************
+

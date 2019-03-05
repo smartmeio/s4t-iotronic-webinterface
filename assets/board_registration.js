@@ -1444,6 +1444,9 @@ function populate_board_info(board_id, flag){
 //function populate_board_info(data){
 	//$('#sensors_on_board').empty();
 
+	$('#info-connectivity-details').empty()
+	$('#sensors_validity').empty();
+
 	//SACERTIS
 	//-------------------------------------------------
 	if(flag){
@@ -1499,14 +1502,33 @@ function populate_board_info(board_id, flag){
 					for(i=0;i<conn_types.length;i++){
 						if(conn_types[i] == connectivity[0].conn_id){
 							conn_1 = "[ "+connectivities[i].ucfirst()+" ] "
-							conn_2 = "-  "+type+": "+value
+							//conn_2 = "-  "+type+": "+value
+
+							if(conn_types[i] == 3){
+								//Considering that for example the ICCID is an integer longer than the maximum number accepted by javascript
+								//it is necessary to encode it using base-64 (btoa to encode and atob to decode)
+								conn_2 = '<div style="text-align:left;">'+
+										'<div style="width: 75%; text-align:left; vertical-align: top; display: inline-block;">'+
+											'-  '+type+': '+value+
+										'</div>'+
+										'<div style="width: 20%; text-align:left; vertical-align: top; display: inline-block;">'+
+											'<input id="info-traffic-details" type="hidden" value="'+btoa(value.toString())+'"/>'+
+											'<input onclick="show_jasper(this)" type="button" value="Details"/>'+
+										'</div>'+
+									 '</div>'
+							}
+							else{
+								conn_2 = '-  '+type+": "+value
+							}
 							break
 						}
 					}
+					//$('#info-traffic').show();
 				}
 				else{
-					conn_1 = null
+					conn_1 = "N/A"
 					conn_2 = ""
+					//$('#info-traffic').hide();
 				}
 
 				$('#info_extras_json').text(JSON.stringify(info.extra, undefined, 4));
@@ -1515,16 +1537,16 @@ function populate_board_info(board_id, flag){
 				$('#info-detail_label').html('<h5><b>Details</b></h5>');
 				$('#info-label').html('<b>Label: </b>'+info.label);
 				$('#info-uuid').html('<b>ID: </b>'+info.board_id);
+				$('#info-description_label').html('<b>Description</b>');
+				$('#info-description').text(info.description);
 
 
 				$('#info-status_label').html('<h5><b>Status</b></h5>');
 				$('#info-lr_version').html('<b>Lightning-rod version: </b>'+label_lr);
 				$('#info-conn-time').html('<b>'+conn_status+'</b>'+info.conn_time);
-				$('#info-connectivity').html('<b>Connectivity: </b>'+conn_1+'<br />&nbsp'+conn_2)
 
-
-				$('#info-description_label').html('<b>Description</b>');
-				$('#info-description').text(info.description);
+				$('#info-connectivity_label').html('<h5><b>Connectivity</b></h5>')
+				$('#info-connectivity').html(conn_1+'<br />'+conn_2)
 
 
 				$('#info-association_label').html('<h5><b>Association</b></h5>');
@@ -1766,7 +1788,43 @@ function populate_board_info(board_id, flag){
 							$('#sensors_timestamp').html('<b>Timestamp: </b>'+results[0].timestamp);
 
 							sensors = response.message.sensors.sort(SortBySensPos);
-						
+
+
+							//Verify WARNINGS (threshold for sensors and sensors' oldest data)
+							//**************************************************************************
+							project_name = get_project_name_by_uuid(getCookie("selected_prj"));
+							mins_to_remove = wiotp_endpoints[project_name].expire_data
+
+							//mins_to_remove = 27862945
+
+							var check_date = new Date()
+							offset = check_date.getTimezoneOffset()
+
+							check_date.setMinutes(check_date.getMinutes()+offset)
+							check_date.setMinutes(check_date.getMinutes()-Number(mins_to_remove))
+							threshold_time = convert_date(check_date)
+							//console.log(threshold_time)
+
+							ordered_last = response.message.sensors.sort(SortByOldest)[0].last.split(".",1)[0];
+							//console.log(ordered_last)
+
+							valid = compare_dates(threshold_time, ordered_last)
+							//console.log(valid)
+							//console.log(results[0])
+
+
+							content = ""
+							if(results[0].warning_threshold || !valid)
+								content += '<span style="display:block; text-align:center"><b>WARNING</b></span>'
+							if(results[0].warning_threshold)
+								content += "&nbsp;- Failed sensors overcome the threshold limit: <b>"+results[0].failed+" / "+results[0].all+"</b> failed!<br />"
+							if(!valid)
+								content += "&nbsp;- Oldest data received at <b>"+ordered_last+"</b>"
+
+							$('#sensors_validity').html('<p class="custom_p" style="margin-bottom: 0px">'+content+'</p>');
+							//**************************************************************************
+
+
 							$("#sensors_section").show();
 							$("#sensors_switch_section").show();
 						

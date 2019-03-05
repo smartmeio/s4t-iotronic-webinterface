@@ -86,11 +86,19 @@ limitations under the License.
 							<div id="info-detail_label"></div>
 							<div id="info-label"></div>
 							<div id="info-uuid"></div>
+							<div id="info-description_label"></div>
+							<textarea id="info-description" rows="2" style="resize: vertical; width: 90%" readonly></textarea>
 						</div>
 						<div style="width: 50%; text-align:left; vertical-align: top; display: inline-block;">
+							<!--
 							<br /><br />
 							<div id="info-description_label"></div>
-							<textarea id="info-description" rows="3" style="resize: vertical" readonly></textarea>
+							<textarea id="info-description" rows="3" style="resize: vertical" readonly></textarea>-->
+							<div id="info-coordinates_label"></div>
+							<div id="info-lat"></div>
+							<div id="info-lon"></div>
+							<div id="info-alt"></div>
+							<div id="info-timestamp"></div>
 						</div>
 					</div>
 
@@ -100,14 +108,19 @@ limitations under the License.
 							<div id="info-status_label"></div>
 							<div id="info-lr_version"></div>
 							<div id="info-conn-time"></div>
-							<div id="info-connectivity"></div>
+							<!--<div id="info-connectivity"></div>-->
 						</div>
 						<div style="width: 50%; text-align:left; vertical-align: top; display: inline-block;">
+							<!--
 							<div id="info-coordinates_label"></div>
 							<div id="info-lat"></div>
 							<div id="info-lon"></div>
 							<div id="info-alt"></div>
 							<div id="info-timestamp"></div>
+							-->
+							<div id="info-connectivity_label"></div>
+							<div id="info-connectivity"></div>
+							<div id="info-connectivity-details"></div>
 						</div>
 					</div>
 
@@ -213,6 +226,8 @@ limitations under the License.
 				<div id="info-sensors">
 					<div id="sensors_section">
 						<h4><b>Sensors</b></h4>
+
+						<div id="sensors_validity" style="margin-top: 10px; margin-bottom: 10px"></div>
 
 						<div id="sensors_switch_section" style="text-align:center;">
 							<div id="sensors_metadata" style="text-align:left">

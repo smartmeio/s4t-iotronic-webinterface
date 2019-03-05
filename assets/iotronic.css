@@ -267,6 +267,13 @@ span {
 	background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
 	text-decoration: none;
 }
+
+.custom_p {
+	background: #F9EECF;
+	border:1px dotted black;
+	text-align:left;
+	width:100%;
+}
 /* ------------------------------------- */
 
 
