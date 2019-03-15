@@ -1305,7 +1305,8 @@ $('.startstop_plugin').click(function(){
 				error: function(response){
 					document.getElementById('loading_bar').style.visibility='hidden';
 					verify_token_expired(response.responseJSON.message, response.responseJSON.result);
-					document.getElementById("plugin_startstop-output").innerHTML = JSON.stringify(response.responseJSON.message);
+					//document.getElementById("plugin_startstop-output").innerHTML = JSON.stringify(response.responseJSON.message);
+					document.getElementById("plugin_startstop-output").innerHTML = "<pre>"+response.responseJSON.message.replace(/\n/g,'<br />')+'</pre>';
 				}
 			});
 		}
@@ -1357,7 +1358,8 @@ $('.startstop_plugin').click(function(){
 										refresh_lists();
 										document.getElementById('loading_bar').style.visibility='hidden';
 									}
-									document.getElementById("plugin_startstop-output").innerHTML += board_name + ": "+ JSON.stringify(response.message)+"<br />";
+									//document.getElementById("plugin_startstop-output").innerHTML += board_name + ": "+ JSON.stringify(response.message)+"<br />";
+									document.getElementById("plugin_startstop-output").innerHTML += board_name + ": "+'<pre>'+JSON.stringify(response.message,null,"\t")+'</pre><br />';
 								},
 								error: function(response){
 									verify_token_expired(response.responseJSON.message, response.responseJSON.result);
@@ -1365,7 +1367,8 @@ $('.startstop_plugin').click(function(){
 										refresh_tableboards("startstop_tableboards", "remove", "C", default_boardlist_columns);
 										document.getElementById('loading_bar').style.visibility='hidden';
 									}
-									document.getElementById("plugin_startstop-output").innerHTML += board_name + ": "+JSON.stringify(response.responseJSON.message)+"<br />";
+									//document.getElementById("plugin_startstop-output").innerHTML += board_name + ": "+JSON.stringify(response.responseJSON.message)+"<br />";
+									document.getElementById("plugin_startstop-output").innerHTML += board_name + ": <pre>"+response.responseJSON.message.replace(/\n/g,'<br />')+'</pre><br />';
 								}
 							});
 							//---------------------------------------------------------------------------------

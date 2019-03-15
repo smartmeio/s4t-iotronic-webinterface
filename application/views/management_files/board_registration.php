@@ -44,11 +44,11 @@ limitations under the License.
 
 					<li><a href="#" onclick='hideall_except("info-extras")'>Extra Info</a></li>
 
-					<!-- SACERTIS -->
+					<!-- CUSTOMIZED -->
 					<? if ($this -> config -> item('load_sensor_management')): ?>
 						<li><a href="#" onclick='hideall_except("info-sensors")'>Sensors</a></li>
 					<? endif ?>
-					<!-- SACERTIS -->
+					<!-- CUSTOMIZED -->
 				</ul>
 			</div>
 		</td>
@@ -222,7 +222,7 @@ limitations under the License.
 					<textarea id="info_extras_json" placeholder="" name="" rows="20" readonly></textarea>
 				</div>
 
-				<!-- SACERTIS -->
+				<!-- CUSTOMIZED -->
 				<div id="info-sensors">
 					<div id="sensors_section">
 						<h4><b>Sensors</b></h4>
@@ -247,7 +247,7 @@ limitations under the License.
 						<table id="info_tablesensors" style="width: 100%"></table>
 					</div>
 				</div>
-				<!-- SACERTIS -->
+				<!-- CUSTOMIZED -->
 			</div>
 		</td>
 	</tr>

@@ -2,7 +2,7 @@
 //TO BE USED !!!
 function test_wiotp(){
 	$.ajax({
-		url: site_url+'Sacertis/verify_wiotp_conn',
+		url: site_url+'Customer/verify_wiotp_conn',
 		success: function(response){
 			console.log(response);
 		}
@@ -19,7 +19,7 @@ function get_board_sensors(uuid, model, callback){
 	data = {'uuid': uuid, 'model': model, 'project_name': project_name};
 
 	$.ajax({
-		url: site_url+'Sacertis/get_board_sensors',
+		url: site_url+'Customer/get_board_sensors',
 		type: 'POST',
 		dataType: 'json',
 		data: data,
@@ -75,7 +75,7 @@ function verify_sensors_status(uuid, model, callback){
 	//console.log(threshold_time)
 
         $.ajax({
-                url: site_url+'Sacertis/get_board_sensors',
+                url: site_url+'Customer/get_board_sensors',
                 type: 'POST',
                 dataType: 'json',
                 data: data,

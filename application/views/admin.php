@@ -24,7 +24,7 @@ limitations under the License.
 	drivers_flag = "<?= $this -> config -> item('load_driver_management')?>";
 	vfs_flag = "<?= $this -> config -> item('load_vfs_management')?>";
 
-	//SACERTIS
+	//CUSTOMIZED
 	//---------------------------------------------------------------------------------------
 	sensors_flag = "<?= $this -> config -> item('load_sensor_management')?>";
 	wiotp_endpoints = JSON.parse('<?= $GLOBALS['wiotp_endpoints']?>');
@@ -143,9 +143,9 @@ limitations under the License.
 		echo '<script src="'.$this -> config -> site_url().'assets/vfs_management.js"></script>';
 	endif;
 
-	//SACERTIS
+	//CUSTOMIZED
 	if ($this -> config -> item('load_sensor_management')):
-		echo '<script src="'.$this -> config -> site_url().'assets/sacertis.js"></script>';
+		echo '<script src="'.$this -> config -> site_url().'assets/customer.js"></script>';
 	endif;
 ?>
 <!-- ########################################################## -->

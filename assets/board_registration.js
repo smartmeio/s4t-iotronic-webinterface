@@ -1447,7 +1447,7 @@ function populate_board_info(board_id, flag){
 	$('#info-connectivity-details').empty()
 	$('#sensors_validity').empty();
 
-	//SACERTIS
+	//CUSTOMIZED
 	//-------------------------------------------------
 	if(flag){
 		hideall_except("info-sensors");
@@ -1753,7 +1753,7 @@ function populate_board_info(board_id, flag){
 					$('#info-networks').hide();
 				}
 
-				//SACERTIS
+				//CUSTOMIZED
 				//----------------------------------------------------------------------------------------------------------
 				//Sensors
 				if(sensors_flag){
@@ -1887,7 +1887,7 @@ console.log("ERROR");
 	//}
 }
 
-//SACERTIS
+//CUSTOMIZED
 //----------------------------------------------------------------------------------------------------------
 //OLD STATIC VERSION
 /*

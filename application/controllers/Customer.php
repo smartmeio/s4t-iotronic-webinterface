@@ -18,7 +18,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 
-class Sacertis extends CI_Controller {
+class Customer extends CI_Controller {
 
 
 	function __construct() {

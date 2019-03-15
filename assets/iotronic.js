@@ -173,7 +173,7 @@ function SortByTimestamp(x,y) {
 	return ((x.timestamp == y.timestamp) ? 0 : ((x.timestamp > y.timestamp) ? 1 : -1 ));
 }
 
-//SACERTIS
+//CUSTOMIZED
 //-------------------------------------------------------------------------------------------
 function SortBySensPos(x,y) {
 	return ((x.sens_pos == y.sens_pos) ? 0 : ((x.sens_pos > y.sens_pos) ? 1 : -1 ));
@@ -504,7 +504,7 @@ function refresh_lists(){
 	var project_id = getCookie("selected_prj");
 	//console.log(project_id);
 
-	//SACERTIS....USELESS????
+	//CUSTOMIZED....USELESS????
 	//test_wiotp();
 
 	$.ajax({
@@ -538,7 +538,7 @@ function refresh_lists(){
 			connected = connected.sort(SortByLabel);
 			disconnected = disconnected.sort(SortByLabel);
 
-			//SACERTIS
+			//CUSTOMIZED
 			//We have to verify that the project is 
 			//---------------------------------------------------------------------------------
 			var project_name = get_project_name_by_uuid(getCookie("selected_prj"));
@@ -579,7 +579,7 @@ function refresh_lists(){
 
 
 	
-			//SACERTIS
+			//CUSTOMIZED
 			//---------------------------------------------------------------------------------------------------------------
 			else {
 
@@ -825,7 +825,7 @@ function create_table_from_json(table_id, obj, array, checkbox_name){
 						content[i][j] = String(content[i][j]).replace(s4t_iotronic_folder, '');
 
 
-					//SACERTIS
+					//CUSTOMIZED
 					//substitute the keywords "active" and "failed" with respectively
 					//green and red circles as for devices status on the homepage layout
 					//------------------------------------------------------------------------------
