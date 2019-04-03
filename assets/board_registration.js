@@ -1785,7 +1785,9 @@ function populate_board_info(board_id, flag){
 						else{
 							$('#sensors_device').html('<b>Device: </b>'+results[0].deviceId);
 							$('#sensors_model').html('<b>Model: </b>'+results[0].typeId);
+							$('#sensors_onboard').html('<b>Installed sensors: </b>'+results[0].all);
 							$('#sensors_timestamp').html('<b>Timestamp: </b>'+results[0].timestamp);
+                                                        
 
 							sensors = response.message.sensors.sort(SortBySensPos);
 
