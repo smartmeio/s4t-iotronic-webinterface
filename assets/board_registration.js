@@ -379,6 +379,9 @@ $('[id="update_boardlist"]').on('change',
 						var conn_types = ["2", "3", "1"]
 
 						$('#board_update_connectivity').empty();
+						$('#board_update_conn_metadata').attr('placeholder','MAC');
+						document.getElementById("board_update_conn_metadata").value = "";
+                                                
 						for(i=0;i<connectivities.length;i++)
 							$('#board_update_connectivity').append('<option title="'+connectivities[i]+'" value="'+conn_types[i]+'" data-unit="">'+connectivities[i].ucfirst()+'</option>');
 
