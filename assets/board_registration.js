@@ -1504,7 +1504,9 @@ function populate_board_info(board_id, flag){
 
 					for(i=0;i<conn_types.length;i++){
 						if(conn_types[i] == connectivity[0].conn_id){
+
 							conn_1 = "[ "+connectivities[i].ucfirst()+" ] "
+							if(connectivities[i] =="mobile") conn_1 += '<a target="_blank" href="https://olivetti.jasper.com/provision/jsp/login.jsp">Jasper</a>'
 							//conn_2 = "-  "+type+": "+value
 
 							if(conn_types[i] == 3){
@@ -1786,7 +1788,8 @@ function populate_board_info(board_id, flag){
 							$('#info_tablesensors').html('<tr><td style="text-align:center">No sensors</td></tr>');
 						}
 						else{
-							$('#sensors_device').html('<b>Device: </b>'+results[0].deviceId);
+							$('#sensors_device').html('<b>Cloud: </b> <a target="_blank" href="'+wiotp_endpoints[project_name]["wiotp_frontend"]+'">WIOTP homepage</a><br><b>Device: </b>'+results[0].deviceId);
+
 							$('#sensors_model').html('<b>Model: </b>'+results[0].typeId);
 							$('#sensors_onboard').html('<b>Installed sensors: </b>'+results[0].all);
 							$('#sensors_timestamp').html('<b>Timestamp: </b>'+results[0].timestamp);
@@ -1881,6 +1884,10 @@ function populate_board_info(board_id, flag){
 					$('#sensors_section').hide();
 					$('#info-sensors').hide();
 				}
+
+				//Statistics
+				stats_link = document.getElementById("info-statistics");
+				stats_link.setAttribute('href', grafana["url_frontend_single"]+info.label)
 				//----------------------------------------------------------------------------------------------------------
 			},
 			error: function(response){

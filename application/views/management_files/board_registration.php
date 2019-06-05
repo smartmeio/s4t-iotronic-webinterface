@@ -48,6 +48,10 @@ limitations under the License.
 					<? if ($this -> config -> item('load_sensor_management')): ?>
 						<li><a href="#" onclick='hideall_except("info-sensors")'>Sensors</a></li>
 					<? endif ?>
+
+					<? if ($this -> config -> item('load_statistics_management')): ?>
+						<li><a id="info-statistics" target="_blank" href="#">Statistics</a></li>
+					<? endif ?>
 					<!-- CUSTOMIZED -->
 				</ul>
 			</div>

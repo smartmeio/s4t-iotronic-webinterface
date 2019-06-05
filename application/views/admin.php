@@ -17,6 +17,7 @@ limitations under the License.
 <script>
 	wstun_ip = "<?= $this -> config -> item('wstun_ip')?>";
 
+	//Managers management
 	cloud_services_flag = "<?= $this -> config -> item('load_cloud_services_management')?>";
 	plugins_flag = "<?= $this -> config -> item('load_plugin_management')?>";
 	networks_flag = "<?= $this -> config -> item('load_network_management')?>";
@@ -31,6 +32,11 @@ limitations under the License.
 	//console.log(wiotp_endpoints);
 	//---------------------------------------------------------------------------------------
 
+	//Monitoring endpoints
+	grafana = JSON.parse('<?= $GLOBALS['grafana']?>');
+	log_manager = JSON.parse('<?= $GLOBALS['log_manager']?>');
+
+	//Security and extras
 	security_method = "<?= $this -> config -> item('security')?>";
 	delay = "<?= $this -> config -> item('polling_delay')?>";
 	string_or_json = "<?= $this -> config -> item('show_string_or_json_lists')?>";

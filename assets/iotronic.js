@@ -547,37 +547,37 @@ function refresh_lists(){
 			var project_name = get_project_name_by_uuid(getCookie("selected_prj"));
 			wiotp_projects = Object.keys(wiotp_endpoints);
 			//console.log(project_name +" "+ wiotp_projects);
+			update_wiotp_fronted = document.getElementById("wiotp_frontend");
 
 			if(wiotp_projects.indexOf(project_name) == -1){
 			//---------------------------------------------------------------------------------
-
-			//Previous version
+				update_wiotp_fronted.setAttribute('href', '');
 			
-			document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+				document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
 
-			for(i=0;i<connected.length;i++){
-				$('#boardlist_status').append('<li>'+
-					//      '<a href="#" onclick=populate_board_info("'+connected[i].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
-					'<a href="#" onclick=populate_board_info("'+connected[i].board_id+'"); data-reveal-id="modal-board-info">'+
-					'<img src="'+site_url+'uploads/green-circle.png" width=20 height=20>'+
-					'<span>'+connected[i].label+'</span>'+
-					'</a>'+
-					'</li>');
-			}
+				for(i=0;i<connected.length;i++){
+					$('#boardlist_status').append('<li>'+
+						//      '<a href="#" onclick=populate_board_info("'+connected[i].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
+						'<a href="#" onclick=populate_board_info("'+connected[i].board_id+'"); data-reveal-id="modal-board-info">'+
+						'<img src="'+site_url+'uploads/green-circle.png" width=20 height=20>'+
+						'<span>'+connected[i].label+'</span>'+
+						'</a>'+
+						'</li>');
+				}
 
 
-			for(j=0;j<disconnected.length;j++){
-				$('#boardlist_status').append('<li>'+
-					//      '<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
-					'<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-board-info">'+
-					'<img src="'+site_url+'uploads/red-circle.png" width=20 height=20>'+
-					'<span>'+disconnected[j].label+'</span>'+
-					'</a>'+
-					'</li>');
-			}
+				for(j=0;j<disconnected.length;j++){
+					$('#boardlist_status').append('<li>'+
+						//      '<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
+						'<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-board-info">'+
+						'<img src="'+site_url+'uploads/red-circle.png" width=20 height=20>'+
+						'<span>'+disconnected[j].label+'</span>'+
+						'</a>'+
+						'</li>');
+				}
 
-			//Refresh markers on the map accordingly to what is retrieved from IoTronic !!!
-			refresh_map();
+				//Refresh markers on the map accordingly to what is retrieved from IoTronic !!!
+				refresh_map();
 			}
 
 
@@ -585,6 +585,8 @@ function refresh_lists(){
 			//CUSTOMIZED
 			//---------------------------------------------------------------------------------------------------------------
 			else {
+			//console.log(wiotp_endpoints[project_name]["wiotp_frontend"])
+			update_wiotp_fronted.setAttribute('href', wiotp_endpoints[project_name]["wiotp_frontend"]);
 
 			var array_promise = [];
 			var degradated = [];
@@ -1086,6 +1088,12 @@ $('.side-menu').mouseover(function(){
 $(document).ready(function() {
 	//To resolve the problem of "Uncaught TypeError: $(...).DataTable is not a function"
 	$.noConflict();
+
+	//CUSTOMIZED
+	//--------------------------------------------------------------
+	update_wiotp_fronted = document.getElementById("wiotp_frontend");
+	update_wiotp_fronted.setAttribute('href', 'xxxx');
+	//--------------------------------------------------------------
 
 	/*
 	//Mapdiv section

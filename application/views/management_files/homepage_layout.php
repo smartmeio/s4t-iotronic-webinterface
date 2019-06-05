@@ -22,7 +22,30 @@ limitations under the License.
 	$iotronic_version = $versions -> iotronic_version;
 	$lr_version = $versions -> lr_version;
 	$wstun_version = $versions -> wstun_version;
-	
+
+	//$projects = json_decode($_COOKIE["projects_list"], true);
+	//$wiotp_projects = json_decode($GLOBALS['wiotp_endpoints'], true);
+	//$wiotp_frontend = "";
+
+	/*
+	foreach($projects as $prj){
+		if($prj["uuid"] == $_COOKIE["selected_prj"]){
+			$wiotp_frontend = $wiotp_projects[$prj["name"]]["wiotp_frontend"];
+			break;
+		}
+	}
+	//print_r($wiotp_frontend);
+	*/
+
+	//Mobile API
+	$mobile_api = json_decode($GLOBALS['mobile_api']);
+	$mobile_api_frontend = $mobile_api -> url_frontend;
+
+	//Monitoring endpoints
+	$grafana = json_decode($GLOBALS['grafana']);
+	$log_manager = json_decode($GLOBALS['log_manager']);
+	$grafana_frontend = $grafana -> url_frontend;
+	$log_manager_frontend = $log_manager -> url_frontend;
 ?>
 
 
@@ -152,6 +175,17 @@ limitations under the License.
 						<li><a data-reveal-id="modal-show-project-requests">Manage</a></li>
 					</ul>
 				</li>
+				<!-- CUSTOMIZED -->
+				<li class="has-submenu"><a href="#">Cloud</a>
+					<ul class="left-submenu">
+						<li class="back"><a href="#">Back</a></li>
+						<li><a target="_blank" href="<?= $grafana_frontend ?>">Grafana</a></li>
+						<li><a target="_blank" href="<?= $mobile_api_frontend ?>">Jasper</a></li>
+						<li><a target="_blank" href="<?= $log_manager_frontend ?>">LogAnalyzer</a></li>
+						<li><a id="wiotp_frontend" target="_blank" href="">WIOTP</a></li>
+					</ul>
+				</li>
+				<!-- CUSTOMIZED -->
 				<li>
 					<a href="" onclick="logout();">Logout</a>
 				</li>

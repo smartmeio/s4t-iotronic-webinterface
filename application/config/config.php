@@ -48,7 +48,10 @@ $config['load_driver_management'] = FALSE;
 $config['load_vfs_management'] = FALSE;
 
 $config['load_sensor_management'] = TRUE; //CUSTOMIZED
+$config['load_statistics_management'] = TRUE; //CUSTOMIZED
 
+//TO BE REMOVED??? Find occurrencies...if any
+/*
 $config['load_commands'] = (
 			$config['load_cloud_services_management']
 			or $config['load_plugin_management']
@@ -57,8 +60,10 @@ $config['load_commands'] = (
 			or $config['load_driver_management']
 			or $config['load_vfs_management']
 
-                        or $config['load_sensor_management'] //CUSTOMIZED
+			or $config['load_sensor_management'] //CUSTOMIZED
+			or $config['load_statistics_management'] //CUSTOMIZED
 );
+ */
 //-------------------------------------------------------------------------
 
 
@@ -72,6 +77,11 @@ $config['endpoints'] = $endpoint;
 //WIOTP_ENDPOINTS
 $GLOBALS['wiotp_endpoints'] = str_replace("'",'"', getenv('WIOTP_ENDPOINTS'));
 //$GLOBALS['wiotp_endpoints'] = getenv('WIOTP_ENDPOINTS');
+
+
+//MONITORING ENDPOINTS
+$GLOBALS['grafana'] = str_replace("'",'"', getenv('GRAFANA'));
+$GLOBALS['log_manager'] = str_replace("'",'"', getenv('LOG_MANAGER'));
 
 
 //EXTRAS

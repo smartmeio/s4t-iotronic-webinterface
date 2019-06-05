@@ -85,6 +85,7 @@ $('[id="select_project"]').on('change',
 		var project_id = $( "#select_project option:selected" ).val();
 		//console.log(project_id);
 		document.cookie = "selected_prj="+project_id;
+
 		refresh_lists();
 	}
 );

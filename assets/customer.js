@@ -91,7 +91,8 @@ function verify_sensors_status(uuid, model, callback){
 							failed += 1;
 					}
 
-					data = {"board_id": parsed.d.group, "failed": failed, "all": sensor_data.length};
+					//data = {"board_id": parsed.d.group, "failed": failed, "all": sensor_data.length};
+					data = {"board_id": uuid, "failed": failed, "all": sensor_data.length};
 
 					if(failed >= response.threshold){
 					//if(failed >= 10000000){
