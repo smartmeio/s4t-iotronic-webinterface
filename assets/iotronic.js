@@ -547,11 +547,12 @@ function refresh_lists(){
 			var project_name = get_project_name_by_uuid(getCookie("selected_prj"));
 			wiotp_projects = Object.keys(wiotp_endpoints);
 			//console.log(project_name +" "+ wiotp_projects);
-			update_wiotp_fronted = document.getElementById("wiotp_frontend");
+			update_wiotp_frontend = document.getElementById("wiotp_frontend");
 
 			if(wiotp_projects.indexOf(project_name) == -1){
 			//---------------------------------------------------------------------------------
-				update_wiotp_fronted.setAttribute('href', '');
+				if(update_wiotp_frontend != null)
+					update_wiotp_frontend.setAttribute('href', '');
 			
 				document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
 
@@ -585,101 +586,147 @@ function refresh_lists(){
 			//CUSTOMIZED
 			//---------------------------------------------------------------------------------------------------------------
 			else {
-			//console.log(wiotp_endpoints[project_name]["wiotp_frontend"])
-			update_wiotp_fronted.setAttribute('href', wiotp_endpoints[project_name]["wiotp_frontend"]);
+				//console.log(wiotp_endpoints[project_name]["wiotp_frontend"])
+				//console.log(update_wiotp_frontend)
+				if(update_wiotp_frontend != null)
+					update_wiotp_frontend.setAttribute('href', wiotp_endpoints[project_name]["wiotp_frontend"]);
 
-			var array_promise = [];
-			var degradated = [];
+				var array_promise = [];
+				var degradated = [];
 
-			for(l=0;l<connected.length;l++){
-				array_promise.push(new Promise(function(resolve){
-					//console.log("BOARD: "+connected[i].board_id);
-					//verify_sensors_status(connected[l].board_id, resolve);
-					verify_sensors_status(connected[l].board_id, connected[l].model, resolve);
-				}));
-			}
-			Promise.all(array_promise).then(function(results){
-				//console.log(results);
+				if(connected.length == 0){
+					if(sensors_flag)
+						document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/yellow-circle.png" width=20 height=20><span> '+degradated.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+					else
+						document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
 
-				/*
-				for(i=0;i<results.length;i++){
-
-					if(results[i] != "NO WIOTP" && results[i] != "NO ACTION"){
-						for(j=0;j<connected.length;j++){
-							if(connected[j].board_id == results[i]){
-								degradated.push(connected[j]);
-								connected.splice(j, 1);
-								break;
-							}
-						}
+					for(j=0;j<disconnected.length;j++){
+						$('#boardlist_status').append('<li>'+
+							//      '<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
+								'<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-board-info">'+
+									'<img src="'+site_url+'uploads/red-circle.png" width=20 height=20>'+
+									'<span>'+disconnected[j].label+'</span>'+
+								'</a>'+
+							'</li>');
 					}
+					refresh_map();
 				}
-				*/
 
-
-				for(i=0;i<results.length;i++){
-					//if(results[i].status != "NO WIOTP" && results[i].status != "NO ACTION"){
-					//if(results[i].status == "CHECKED" || results[i].status == "NO ACTION"){
-						for(j=0;j<connected.length;j++){
-							if(connected[j].board_id == results[i].board_id){
-
-								connected[j].failed = results[i].failed
-								connected[j].all = results[i].all
-
-								//if(results[i].status == "CHECKED"){
-								if(results[i].status == "CHECKED" || results[i].valid == false){
-									degradated.push(connected[j]);
-									connected.splice(j, 1);
-								}
-								break
-							}
+				else{
+					if(sensors_flag){
+						for(l=0;l<connected.length;l++){
+							array_promise.push(new Promise(function(resolve){
+								//console.log("BOARD: "+connected[i].board_id);
+								//verify_sensors_status(connected[l].board_id, resolve);
+								verify_sensors_status(connected[l].board_id, connected[l].model, resolve);
+							}));
 						}
-					//}
+						Promise.all(array_promise).then(function(results){
+							//console.log(results);
+		
+							/*
+							for(i=0;i<results.length;i++){
+
+								if(results[i] != "NO WIOTP" && results[i] != "NO ACTION"){
+									for(j=0;j<connected.length;j++){
+										if(connected[j].board_id == results[i]){
+											degradated.push(connected[j]);
+											connected.splice(j, 1);
+											break;
+										}
+									}
+								}
+							}
+							*/
+
+
+							for(i=0;i<results.length;i++){
+								//if(results[i].status != "NO WIOTP" && results[i].status != "NO ACTION"){
+								//if(results[i].status == "CHECKED" || results[i].status == "NO ACTION"){
+									for(j=0;j<connected.length;j++){
+										if(connected[j].board_id == results[i].board_id){
+
+											connected[j].failed = results[i].failed
+											connected[j].all = results[i].all
+
+											//if(results[i].status == "CHECKED"){
+											if(results[i].status == "CHECKED" || results[i].valid == false){
+												degradated.push(connected[j]);
+												connected.splice(j, 1);
+											}
+											break
+										}
+									}
+								//}
+							}
+
+							for(i=0;i<connected.length;i++){
+
+								title = "All: "+connected[i].all+"\n"+"Failed: "+connected[i].failed;
+
+								$('#boardlist_status').append('<li>' +
+										'<a href="#" onclick="populate_board_info(\''+connected[i].board_id+'\', \'true\');" title="'+title+'" data-reveal-id="modal-board-info">'+
+											'<img src="'+site_url+'uploads/green-circle.png" width=20 height=20>'+
+										'</a>'+
+										'<a href="#" onclick="populate_board_info(\''+connected[i].board_id+'\');" title="'+title+'" data-reveal-id="modal-board-info">'+
+										'&nbsp;'+connected[i].label+'</a>'+
+									      '</li>');
+							}
+
+							for(k=0;k<degradated.length;k++){
+
+								title = "All: "+degradated[k].all+"\n"+"Failed: "+degradated[k].failed;
+
+								$('#boardlist_status').append('<li>' +
+										'<a href="#" onclick="populate_board_info(\''+degradated[k].board_id+'\', \'true\');" title="'+title+'" data-reveal-id="modal-board-info">'+
+											'<img src="'+site_url+'uploads/yellow-circle.png" width="20" height="20" />'+
+										'</a>'+
+										'<a href="#" onclick="populate_board_info(\''+degradated[k].board_id+'\')"; title="'+title+'"; data-reveal-id="modal-board-info">'+
+										'&nbsp;'+degradated[k].label+'</a>'+
+									      '</li>');
+							}
+
+							for(j=0;j<disconnected.length;j++){
+								$('#boardlist_status').append('<li>'+
+									//	'<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
+										'<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-board-info">'+
+											'<img src="'+site_url+'uploads/red-circle.png" width=20 height=20>'+
+											'<span>'+disconnected[j].label+'</span>'+
+										'</a>'+
+									      '</li>');
+							}
+
+							document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/yellow-circle.png" width=20 height=20><span> '+degradated.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+
+							//refresh_map();
+
+						}); //close Promise.ALL
+					}
+					else{
+						for(i=0;i<connected.length;i++){
+
+							$('#boardlist_status').append('<li>' +
+								'<a href="#" onclick="populate_board_info(\''+connected[i].board_id+'\', \'true\');" data-reveal-id="modal-board-info">'+
+									'<img src="'+site_url+'uploads/green-circle.png" width=20 height=20>'+
+								'</a>'+
+								'<a href="#" onclick="populate_board_info(\''+connected[i].board_id+'\');" data-reveal-id="modal-board-info">'+'&nbsp;'+connected[i].label+'</a>'+
+							      '</li>');
+						}
+
+						for(j=0;j<disconnected.length;j++){
+							$('#boardlist_status').append('<li>'+
+								// 	  '<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
+								'<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-board-info">'+
+									'<img src="'+site_url+'uploads/red-circle.png" width=20 height=20>'+'<span>'+disconnected[j].label+'</span>'+
+								'</a>'+
+							      '</li>');
+						}
+
+						document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+						//refresh_map();
+					}
+					refresh_map();
 				}
-
-				for(i=0;i<connected.length;i++){
-
-					title = "All: "+connected[i].all+"\n"+"Failed: "+connected[i].failed;
-
-					$('#boardlist_status').append('<li>' +
-									'<a href="#" onclick="populate_board_info(\''+connected[i].board_id+'\', \'true\');" title="'+title+'" data-reveal-id="modal-board-info">'+
-										'<img src="'+site_url+'uploads/green-circle.png" width=20 height=20>'+
-									'</a>'+
-									'<a href="#" onclick="populate_board_info(\''+connected[i].board_id+'\');" title="'+title+'" data-reveal-id="modal-board-info">'+
-									'&nbsp;'+connected[i].label+'</a>'+
-								      '</li>');
-				}
-
-				for(k=0;k<degradated.length;k++){
-
-					title = "All: "+degradated[k].all+"\n"+"Failed: "+degradated[k].failed;
-
-					$('#boardlist_status').append('<li>' +
-									'<a href="#" onclick="populate_board_info(\''+degradated[k].board_id+'\', \'true\');" title="'+title+'" data-reveal-id="modal-board-info">'+
-										'<img src="'+site_url+'uploads/yellow-circle.png" width="20" height="20" />'+
-									'</a>'+
-									'<a href="#" onclick="populate_board_info(\''+degradated[k].board_id+'\')"; title="'+title+'"; data-reveal-id="modal-board-info">'+
-									'&nbsp;'+degradated[k].label+'</a>'+
-								      '</li>');
-
-				}
-
-				for(j=0;j<disconnected.length;j++){
-					$('#boardlist_status').append('<li>'+
-								//	'<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
-									'<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-board-info">'+
-										'<img src="'+site_url+'uploads/red-circle.png" width=20 height=20>'+
-										'<span>'+disconnected[j].label+'</span>'+
-									'</a>'+
-								      '</li>');
-				}
-
-				document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/yellow-circle.png" width=20 height=20><span> '+degradated.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
-
-				refresh_map();
-
-			}); //close Promise.ALL
-
 			//---------------------------------------------------------------------------------------------------------------
 			} //If-else in function of the presence of the project_name inside the JSON of the WIOTP projects
 		},
@@ -1091,8 +1138,9 @@ $(document).ready(function() {
 
 	//CUSTOMIZED
 	//--------------------------------------------------------------
-	update_wiotp_fronted = document.getElementById("wiotp_frontend");
-	update_wiotp_fronted.setAttribute('href', 'xxxx');
+	update_wiotp_frontend = document.getElementById("wiotp_frontend");
+	if(update_wiotp_frontend != null)
+		update_wiotp_frontend.setAttribute('href', 'xxxx');
 	//--------------------------------------------------------------
 
 	/*

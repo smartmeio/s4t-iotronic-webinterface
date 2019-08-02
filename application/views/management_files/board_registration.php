@@ -45,11 +45,11 @@ limitations under the License.
 					<li><a href="#" onclick='hideall_except("info-extras")'>Extra Info</a></li>
 
 					<!-- CUSTOMIZED -->
-					<? if ($this -> config -> item('load_sensor_management')): ?>
+					<? if ($GLOBALS['wiotp_endpoints'] != "{}" && $this -> config -> item('load_sensor_management')): ?>
 						<li><a href="#" onclick='hideall_except("info-sensors")'>Sensors</a></li>
 					<? endif ?>
 
-					<? if ($this -> config -> item('load_statistics_management')): ?>
+					<? if ($GLOBALS['grafana'] != "{}" && $this -> config -> item('load_statistics_management') && $grafana_frontend != ""): ?>
 						<li><a id="info-statistics" target="_blank" href="#">Statistics</a></li>
 					<? endif ?>
 					<!-- CUSTOMIZED -->

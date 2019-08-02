@@ -23,29 +23,43 @@ limitations under the License.
 	$lr_version = $versions -> lr_version;
 	$wstun_version = $versions -> wstun_version;
 
-	//$projects = json_decode($_COOKIE["projects_list"], true);
-	//$wiotp_projects = json_decode($GLOBALS['wiotp_endpoints'], true);
-	//$wiotp_frontend = "";
+	$projects = json_decode($_COOKIE["projects_list"], true);
 
-	/*
-	foreach($projects as $prj){
-		if($prj["uuid"] == $_COOKIE["selected_prj"]){
-			$wiotp_frontend = $wiotp_projects[$prj["name"]]["wiotp_frontend"];
-			break;
+
+	//WIOTP
+	$wiotp_frontend = "";
+	if ($GLOBALS['wiotp_endpoints'] != "{}" && $this -> config -> item('load_sensor_management') != FALSE){
+		$wiotp_projects = json_decode($GLOBALS['wiotp_endpoints'], true);
+
+		foreach($projects as $prj){
+			if($prj["uuid"] == $_COOKIE["selected_prj"]){
+				$wiotp_frontend = $wiotp_projects[$prj["name"]]["wiotp_frontend"];
+				break;
+			}
 		}
+		//print_r($wiotp_frontend);
 	}
-	//print_r($wiotp_frontend);
-	*/
+	//else print_r("ELSE WIOTP ");
 
 	//Mobile API
-	$mobile_api = json_decode($GLOBALS['mobile_api']);
-	$mobile_api_frontend = $mobile_api -> url_frontend;
+	if ($GLOBALS['mobile_api'] != "{}" && $this -> config -> item('mobile_api_flag') != FALSE){
+		$mobile_api = json_decode($GLOBALS['mobile_api']);
+		$mobile_api_frontend = $mobile_api -> url_frontend;
+	}
+	//else print_r("ELSE MOBILE ");
 
 	//Monitoring endpoints
-	$grafana = json_decode($GLOBALS['grafana']);
-	$log_manager = json_decode($GLOBALS['log_manager']);
-	$grafana_frontend = $grafana -> url_frontend;
-	$log_manager_frontend = $log_manager -> url_frontend;
+	if ($GLOBALS['grafana'] != "{}" && $this -> config -> item('load_statistics_management') != FALSE){
+		$grafana = json_decode($GLOBALS['grafana']);
+		$grafana_frontend = $grafana -> url_frontend;
+	}
+	//else print_r("ELSE GRAFANA ");
+
+	if ($GLOBALS['log_manager'] != "{}" && $this -> config -> item('log_manager_flag') != FALSE){
+		$log_manager = json_decode($GLOBALS['log_manager']);
+		$log_manager_frontend = $log_manager -> url_frontend;
+	}
+	//else print_r("ELSE LOG ");
 ?>
 
 
@@ -176,15 +190,26 @@ limitations under the License.
 					</ul>
 				</li>
 				<!-- CUSTOMIZED -->
+				<? if ($this -> config -> item('load_statistics_management') || $this -> config -> item('log_manager_flag') || $this -> config -> item('mobile_api_flag') || $this -> config -> item('load_sensor_management')): ?>
 				<li class="has-submenu"><a href="#">Cloud</a>
 					<ul class="left-submenu">
 						<li class="back"><a href="#">Back</a></li>
-						<li><a target="_blank" href="<?= $grafana_frontend ?>">Grafana</a></li>
-						<li><a target="_blank" href="<?= $mobile_api_frontend ?>">Jasper</a></li>
-						<li><a target="_blank" href="<?= $log_manager_frontend ?>">LogAnalyzer</a></li>
-						<li><a id="wiotp_frontend" target="_blank" href="">WIOTP</a></li>
+						<? if ($this -> config -> item('load_statistics_management') && $grafana_frontend != ""): ?>
+							<li><a target="_blank" href="<?= $grafana_frontend ?>">Grafana</a></li>
+						<? endif ?>
+						<? if ($this -> config -> item('mobile_api_flag') && $GLOBALS['mobile_api'] != "{}"): ?>	
+							<li><a target="_blank" href="<?= $mobile_api_frontend ?>">Mobile Manager</a></li>
+						<? endif ?>
+						<? if ($this -> config -> item('log_manager_flag') && $log_manager_frontend != ""): ?>
+							<li><a target="_blank" href="<?= $log_manager_frontend ?>">Log Manager</a></li>
+						<? endif ?>
+
+						<? if ($this -> config -> item('load_sensor_management')): ?>
+							<li><a id="wiotp_frontend" target="_blank" href="<?= $wiotp_frontend ?>">Sensors Manager</a></li>
+						<? endif ?>
 					</ul>
 				</li>
+				<? endif ?>
 				<!-- CUSTOMIZED -->
 				<li>
 					<a href="" onclick="logout();">Logout</a>

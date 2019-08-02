@@ -1,11 +1,65 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-
-//Iotronic Endpoints
+//				User settings
+//############################################################################
+//Iotronic configurations
+//-------------------------------------------------------------------------
 $default_api_address = '<IP_OR_HOSTNAME>:<PORT>';
 $default_iotronic_address = '<IP_OR_HOSTNAME>';
 $default_wstun_address = '<IP_OR_HOSTNAME>';
+
+//Default project 
+$config['default_project'] = 'Admin';
+//-------------------------------------------------------------------------
+
+
+//Management flags
+//-------------------------------------------------------------------------
+//Iotronic Modules
+$config['load_cloud_services_management'] = TRUE;
+$config['load_plugin_management'] = TRUE;
+$config['load_network_management'] = FALSE;
+$config['load_gpio_management'] = FALSE;
+$config['load_driver_management'] = FALSE;
+$config['load_vfs_management'] = FALSE;
+
+//External Modules
+$config['load_sensor_management'] = FALSE; //CUSTOMIZED es. WIOTP
+$config['load_statistics_management'] = FALSE; //CUSTOMIZED es. Grafana
+
+//Third-party services flags
+$config['mobile_api_flag'] = FALSE; //SIM mobile manager webpage
+$config['log_manager_flag'] = FALSE; //Log manager es. LogAnalyzer
+
+
+$statistics_url_frontend='';
+$statistics_url_frontend_single='';
+$log_manager_url_frontend='';
+//-------------------------------------------------------------------------
+
+
+//Security method (basic, certificate, password)
+//-------------------------------------------------------------------------
+$config['security'] = 'password';
+//-------------------------------------------------------------------------
+
+
+//Software versions
+//-------------------------------------------------------------------------
+$dash_version = '2.3.8';
+$iotronic_version = '2.3.6';
+$lr_version = '2.3.7';
+$wstun_version = '1.0.11';
+//-------------------------------------------------------------------------
+//############################################################################
+
+
+
+//				Default settings
+//############################################################################
+# Default Iotronic Home
+$config['s4t_iotronic_folder'] = '/var/lib/iotronic/';
 
 //OpenstreetMap Endpoint
 $config['map_url'] = 'https://{s}.tile.openstreetmap.org/';
@@ -26,47 +80,6 @@ $config['s4t_api_url'] = 'https://'.$api_address.'/v1';
 $config['swagger_url'] = 'https://'.$iotronic_address.'/iotronic-api-docs';
 
 
-//Default project and iotronic folder
-$config['default_project'] = 'Admin';
-$config['s4t_iotronic_folder'] = '/var/lib/iotronic/';
-
-
-//Security method (basic, certificate, password)
-$config['security'] = 'password'; 
-
-//Mobile status
-$GLOBALS['mobile_api'] = str_replace("'",'"', getenv('MOBILE_API'));
-
-
-//Commands management
-//-------------------------------------------------------------------------
-$config['load_cloud_services_management'] = TRUE;
-$config['load_plugin_management'] = TRUE;
-$config['load_network_management'] = FALSE;
-$config['load_gpio_management'] = TRUE;
-$config['load_driver_management'] = FALSE;
-$config['load_vfs_management'] = FALSE;
-
-$config['load_sensor_management'] = TRUE; //CUSTOMIZED
-$config['load_statistics_management'] = TRUE; //CUSTOMIZED
-
-//TO BE REMOVED??? Find occurrencies...if any
-/*
-$config['load_commands'] = (
-			$config['load_cloud_services_management']
-			or $config['load_plugin_management']
-			or $config['load_network_management']
-			or $config['load_gpio_management']
-			or $config['load_driver_management']
-			or $config['load_vfs_management']
-
-			or $config['load_sensor_management'] //CUSTOMIZED
-			or $config['load_statistics_management'] //CUSTOMIZED
-);
- */
-//-------------------------------------------------------------------------
-
-
 //ENDPOINTS
 $endpoint['ckan'] = FALSE; //TRUE;
 $endpoint['mysql'] = FALSE;
@@ -74,33 +87,31 @@ $endpoint['mongo'] = FALSE;
 $config['endpoints'] = $endpoint;
 
 
-//WIOTP_ENDPOINTS
-$GLOBALS['wiotp_endpoints'] = str_replace("'",'"', getenv('WIOTP_ENDPOINTS'));
-//$GLOBALS['wiotp_endpoints'] = getenv('WIOTP_ENDPOINTS');
-
-
-//MONITORING ENDPOINTS
-$GLOBALS['grafana'] = str_replace("'",'"', getenv('GRAFANA'));
-$GLOBALS['log_manager'] = str_replace("'",'"', getenv('LOG_MANAGER'));
-
-
-//EXTRAS
+//Extra configuration variables
 //-------------------------------------------------------------------------
 $config['polling_delay'] = 2000;
 $config['selectbox_size'] = 9;
 $config['show_string_or_json_lists'] = TRUE;
-
-
-$config['versions'] = str_replace("'",'"', getenv('IOTRONIC_VERSIONS'));
-
-/*
-$config['dash_version'] = '2.3.0-2';
-$config['iotronic_version'] = '2.3.0-1';
-$config['lr_version'] = '2.3.0-1';
-$config['wstun_version'] = '1.0.7-1';
-*/
 //-------------------------------------------------------------------------
 
+
+//WIOTP_ENDPOINTS
+$GLOBALS['wiotp_endpoints'] = !empty(getenv('WIOTP_ENDPOINTS')) ? str_replace("'",'"', getenv('WIOTP_ENDPOINTS')) : "{}";
+//$GLOBALS['wiotp_endpoints'] = "{}";
+
+//MOBILE STATUS
+$GLOBALS['mobile_api'] = !empty(getenv('MOBILE_API')) ? str_replace("'",'"', getenv('MOBILE_API')) : "{}";
+
+//MONITORING ENDPOINTS
+//$GLOBALS['grafana'] = !empty(getenv('GRAFANA')) ? str_replace("'",'"', getenv('GRAFANA')) : "{}";
+//$GLOBALS['log_manager'] = !empty(getenv('LOG_MANAGER')) ? str_replace("'",'"', getenv('LOG_MANAGER')) : "{}";
+
+$GLOBALS['grafana'] = !empty(getenv('GRAFANA')) ? str_replace("'",'"', getenv('GRAFANA')) : '{"url_frontend": "'.$statistics_url_frontend.'", "url_frontend_single":"'.$statistics_url_frontend_single.'"}';
+$GLOBALS['log_manager'] = !empty(getenv('LOG_MANAGER')) ? str_replace("'",'"', getenv('LOG_MANAGER')) : '{"url_frontend": "'.$log_manager_url_frontend.'"}';
+
+//SOFTWARE VERSIONS
+$config['versions'] = !empty(getenv('IOTRONIC_VERSIONS')) ? str_replace("'",'"', getenv('IOTRONIC_VERSIONS')) : '{"iotronic_version":"'.$iotronic_version.'", "dash_version":"'.$dash_version.'", "lr_version":"'.$lr_version.'", "wstun_version":"'.$wstun_version.'"}';
+//############################################################################
 
 
 

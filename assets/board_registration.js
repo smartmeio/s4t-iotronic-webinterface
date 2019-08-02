@@ -182,7 +182,7 @@ $('[data-reveal-id="modal-action-board"]').on('click',
 		$('#action_project').prop('checked', false);
 		$('#action_boardlist_bundle').show();
 
-		actions_array = ["hostname", "reboot", "restart_lr"];
+		actions_array = ["hostname", "mount_ro", "mount_rw", "mount_status", "reboot", "restart_lr"];
 
 		//OLD: select approach
 		//update_boardsv2('action_boardlist', 'C', true);
@@ -203,7 +203,7 @@ $('#board_actionlist').on('change', function(){
 	$('#action-board-time').val("");
 	$('#action-board_parameters').val("");
 
-	if(this.value == "--" || this.value == "hostname"){
+	if(this.value == "--" || this.value == "hostname" || this.value == "mount_rw" || this.value == "mount_ro" || this.value == "mount_status"){
 		$('#action-board-time_bundle').hide();
 		$('#action-board_parameters_bundle').hide();
 	}
@@ -1176,7 +1176,10 @@ $('#action-board').click(function(){
 										refresh_lists();
 										document.getElementById('loading_bar').style.visibility='hidden';
 									}
-									document.getElementById("board_action-output").innerHTML += board_name +": " + JSON.stringify(response.message)+"<br />";
+									if(action == "mount_status")
+										document.getElementById("board_action-output").innerHTML += board_name +": " +'<pre><font size="1">'+response.message+'</font></pre></br>';
+									else
+										document.getElementById("board_action-output").innerHTML += board_name +": " + JSON.stringify(response.message)+"<br />";
 								},
 								error: function(response){
 									verify_token_expired(response.responseJSON.message, response.responseJSON.result);
@@ -1506,7 +1509,7 @@ function populate_board_info(board_id, flag){
 						if(conn_types[i] == connectivity[0].conn_id){
 
 							conn_1 = "[ "+connectivities[i].ucfirst()+" ] "
-							if(connectivities[i] =="mobile") conn_1 += '<a target="_blank" href="https://olivetti.jasper.com/provision/jsp/login.jsp">Jasper</a>'
+							if(connectivities[i] =="mobile" && mobile_api_flag && Object.keys(mobile_endpoints).length != 0) conn_1 += '<a target="_blank" href="'+mobile_endpoints.url_frontend+'">Manager</a>'
 							//conn_2 = "-  "+type+": "+value
 
 							if(conn_types[i] == 3){
@@ -1515,12 +1518,17 @@ function populate_board_info(board_id, flag){
 								conn_2 = '<div style="text-align:left;">'+
 										'<div style="width: 75%; text-align:left; vertical-align: top; display: inline-block;">'+
 											'-  '+type+': '+value+
-										'</div>'+
+										'</div>';
+								if(mobile_api_flag){
+									conn_2 +=
 										'<div style="width: 20%; text-align:left; vertical-align: top; display: inline-block;">'+
-											'<input id="info-traffic-details" type="hidden" value="'+btoa(value.toString())+'"/>'+
-											'<input onclick="show_jasper(this)" type="button" value="Details"/>'+
+											'<input id="info-traffic-details" type="hidden" value="'+btoa(value.toString())+'"/>';
+									if(Object.keys(mobile_endpoints).length != 0)
+										conn_2 +='<input onclick="show_mobile_manager(this)" type="button" value="Details"/>'
+									conn_2 +=
 										'</div>'+
 									 '</div>'
+								}
 							}
 							else{
 								conn_2 = '-  '+type+": "+value
@@ -1886,8 +1894,13 @@ function populate_board_info(board_id, flag){
 				}
 
 				//Statistics
-				stats_link = document.getElementById("info-statistics");
-				stats_link.setAttribute('href', grafana["url_frontend_single"]+info.label)
+				if(statistics_flag){
+					stats_link = document.getElementById("info-statistics");
+					stats_link.setAttribute('href', grafana["url_frontend_single"]+info.label)
+				}
+				else{
+					$("info-statistics").hide();
+				}
 				//----------------------------------------------------------------------------------------------------------
 			},
 			error: function(response){

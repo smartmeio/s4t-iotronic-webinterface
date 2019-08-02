@@ -28,7 +28,10 @@ limitations under the License.
 	//CUSTOMIZED
 	//---------------------------------------------------------------------------------------
 	sensors_flag = "<?= $this -> config -> item('load_sensor_management')?>";
+	statistics_flag = "<?= $this -> config -> item('load_statistics_management')?>";
+	mobile_api_flag = "<?= $this -> config -> item('mobile_api_flag')?>";
 	wiotp_endpoints = JSON.parse('<?= $GLOBALS['wiotp_endpoints']?>');
+	mobile_endpoints = JSON.parse('<?= $GLOBALS['mobile_api']?>');
 	//console.log(wiotp_endpoints);
 	//---------------------------------------------------------------------------------------
 
@@ -150,7 +153,7 @@ limitations under the License.
 	endif;
 
 	//CUSTOMIZED
-	if ($this -> config -> item('load_sensor_management')):
+	if ($this -> config -> item('mobile_api_flag') || $this -> config -> item('load_sensor_management')):
 		echo '<script src="'.$this -> config -> site_url().'assets/customer.js"></script>';
 	endif;
 ?>

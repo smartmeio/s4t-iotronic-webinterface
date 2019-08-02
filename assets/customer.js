@@ -136,7 +136,7 @@ function verify_sensors_status(uuid, model, callback){
 
 
 //$('#info-connectivit-details').html('ssss')
-function show_jasper(){
+function show_mobile_manager(){
 
 	encoded_iccid = $('#info-traffic-details').val();
 	iccid = atob(encoded_iccid)
