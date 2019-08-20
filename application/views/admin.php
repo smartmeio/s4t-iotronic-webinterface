@@ -1,5 +1,5 @@
 <!--
-Copyright 2017-2018 Carmelo Romeo (caromeo@unime.it)
+Copyright 2017-2019 Carmelo Romeo (carmelo.romeo85@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -77,6 +77,7 @@ limitations under the License.
 			}
 		}
 	}
+
 </script>
 
 
@@ -86,14 +87,13 @@ limitations under the License.
 <!-- ########################################################## -->
 <?
 	$selectbox_size = $this -> config -> item('selectbox_size');
- 
+
 	include 'management_files/homepage_layout.php';
 	include 'management_files/board_registration.php';
 	include 'management_files/user_registration.php';
 	include 'management_files/project_registration.php';
 	include 'management_files/layout_registration.php';
 	include 'management_files/request_management.php';
-
 
 	//Iotronic
 	echo '<link rel="stylesheet" href="'.$this -> config -> site_url().'assets/iotronic.css"></link>';
@@ -161,7 +161,6 @@ limitations under the License.
 
 <script>
 	window.onload = function() {
-
 		//Added these variables 
 		default_project = getCookie('default_project');
 		token_or_log = getCookie('token');

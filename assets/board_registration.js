@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2018 Carmelo Romeo (caromeo@unime.it)
+ * Copyright 2017-2019 Carmelo Romeo (carmelo.romeo85@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1894,7 +1894,7 @@ function populate_board_info(board_id, flag){
 				}
 
 				//Statistics
-				if(statistics_flag){
+				if(statistics_flag && grafana["url_frontend_single"] != ""){
 					stats_link = document.getElementById("info-statistics");
 					stats_link.setAttribute('href', grafana["url_frontend_single"]+info.label)
 				}

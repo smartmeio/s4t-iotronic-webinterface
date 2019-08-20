@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2018 Carmelo Romeo (caromeo@unime.it)
+ * Copyright 2017-2019 Carmelo Romeo (carmelo.romeo85@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -352,7 +352,40 @@ function login(){
 				document.cookie = "token="+response.message.token+"; expires="+expiring_date+"; path=/iotronic/Admin";
 				document.cookie = "default_project="+default_project+"; path=/iotronic/Admin";
 
-				window.location.href = site_url+"Admin/web_ui";
+				//FROM
+				//window.location.href = site_url+"Admin/web_ui";
+
+				//TO
+				ajax_headers = {
+					"x-auth-token": response.message.token,
+					"Content-Type": "application/json"
+				};
+				var fields_to_show = ["name", "uuid"];
+
+				$.ajax({
+					url: s4t_api_url+"/projects",
+					type: "GET",
+					dataType: 'json',
+					headers: ajax_headers,
+					success: function(response){
+						parsed_response = parse_json_fields(fields_to_show, response.message, false).sort(SortByName);
+						document.cookie = "projects_list="+JSON.stringify(parsed_response)+"; path=/iotronic/Admin";
+
+						var pr = parsed_response;
+						for(var i=0; i<pr.length; i++){
+							if(pr[i].name == default_project){
+								document.cookie = "selected_prj="+pr[i].uuid+"; path=/iotronic/Admin";
+								break;
+							}
+						}
+
+						window.location.href = site_url+"Admin/web_ui";
+					},
+					error: function(response){
+						alert("Error getting the list of project! Refresh the page!");
+						window.location.href = site_url+"Admin/web_ui";
+					}
+				});
 			},
 			/*
 			error: function(response){

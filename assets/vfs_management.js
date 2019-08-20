@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2018 Carmelo Romeo (caromeo@unime.it)
+ * Copyright 2017-2019 Carmelo Romeo (carmelo.romeo85@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
