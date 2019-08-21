@@ -5,9 +5,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 //############################################################################
 //Iotronic configurations
 //-------------------------------------------------------------------------
-$default_api_address = 'IP_OR_HOSTNAME>:<PORT>';
-$default_iotronic_address = 'IP_OR_HOSTNAME>';
-$default_wstun_address = 'IP_OR_HOSTNAME>';
+$default_api_address = '<IP_OR_HOSTNAME>:<PORT>';
+$default_iotronic_address = '<IP_OR_HOSTNAME>';
+$default_wstun_address = '<IP_OR_HOSTNAME>';
 
 //Default project 
 $config['default_project'] = 'Admin';
