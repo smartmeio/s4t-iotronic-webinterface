@@ -34,11 +34,14 @@ document.getElementById('board_update_extrafile').element_id = "board_update_ext
 $('[data-reveal-id="modal-show-boards"]').on('click',
 	function() {
 
-		//var fields_to_show = ["label", "status", "latest_update", "mobile", "net_enabled", "notify", "board_id"];
-		var fields_to_show = ["label", "status", "latest_update", "notify", "board_id"];
+		//var fields_to_show = ["label", "status", "latest_update", "notify", "board_id"];
+		var fields_to_show = ["label", "status", "lr_version", "latest_update", "board_id", "state", "state_time"];
 
+		var prj = getCookie("selected_prj");
+		
 		$.ajax({
-			url: s4t_api_url+"/boards",
+			//url: s4t_api_url+"/boards",
+			url: s4t_api_url+"/boards?project="+prj,
 			type: "GET",
 			dataType: 'json',
 			headers: ajax_headers,
@@ -182,7 +185,7 @@ $('[data-reveal-id="modal-action-board"]').on('click',
 		$('#action_project').prop('checked', false);
 		$('#action_boardlist_bundle').show();
 
-		actions_array = ["hostname", "mount_ro", "mount_rw", "mount_status", "reboot", "restart_lr"];
+		actions_array = ["mount_ro", "mount_rw", "mount_status", "ping", "reboot", "restart_lr"];
 
 		//OLD: select approach
 		//update_boardsv2('action_boardlist', 'C', true);
@@ -191,8 +194,12 @@ $('[data-reveal-id="modal-action-board"]').on('click',
 		refresh_tableboards("boardaction_tableboards", "remove", "C", default_boardlist_columns);
 
 		$('#board_actionlist').append('<option title="--" value="--" data-unit="">--</option>');
-		for(i=0;i<actions_array.length;i++)
-			$('#board_actionlist').append('<option title="'+actions_array[i]+'" value="'+actions_array[i]+'" data-unit="">'+actions_array[i]+'</option>');
+		for(i=0;i<actions_array.length;i++){
+			if(actions_array[i] == "ping")
+				$('#board_actionlist').append('<option title="'+actions_array[i]+'" value="hostname" data-unit="">'+actions_array[i]+'</option>');
+			else
+				$('#board_actionlist').append('<option title="'+actions_array[i]+'" value="'+actions_array[i]+'" data-unit="">'+actions_array[i]+'</option>');
+		}
 	}
 );
 
@@ -215,6 +222,186 @@ $('#board_actionlist').on('change', function(){
 		$('#action-board-time_bundle').hide();
 		$('#action-board_parameters_bundle').show();
 
+	}
+});
+
+
+$('[data-reveal-id="modal-maintenance-board"]').on('click',
+	function(){
+
+		document.getElementById("board_maintenance-output").innerHTML ='';
+
+		$('#maintenance_project').prop('checked', false);
+		$('#maintenance_boardlist_bundle').show();
+		$('#maintenancestate_select_bundle').remove();
+		$('#maintenanceconn_select_bundle').remove();
+
+		//NEW: table approach
+		maintenance_columns = default_boardlist_columns.concat(["state", "status"])
+		refresh_tableboards("boardmaintenance_tableboards", "remove", null, maintenance_columns);
+
+		$('#maintenance_actionlist').empty();
+		$('#maintenance_actionlist').append('<option title="" value="--" data-unit="">--</option>');
+		$('#maintenance_actionlist').append('<option title="Change State" value="state" data-unit="">Change State</option>');
+		$('#maintenance_actionlist').append('<option title="Force Connection" value="connection" data-unit="">Force Connection</option>');
+	}
+);
+
+
+$('[id="maintenance_actionlist"]').on('change',
+	function(){
+
+		$('#maintenancestate_select_bundle').remove();
+		$('#maintenanceconn_select_bundle').remove();
+
+		if(this.value=="state"){
+			$('#maintenance_select_bundle')
+			.append('<div id="maintenancestate_select_bundle" style="text-align:center;">'+
+					'<div style="width: 15%; text-align:left; display: inline-block;">'+
+						'<label>State</label>'+
+					'</div>'+
+					'<div style="width: 40%; text-align:center; display: inline-block;">'+
+						'<select id="board_maintenancestate"></select>'+
+					'</div>'+
+				'</div>')
+
+			$('#board_maintenancestate').empty();
+			$('#board_maintenancestate').append('<option title="New" value="new" data-unit="">New</option>');
+			$('#board_maintenancestate').append('<option title="Operative" value="operative" data-unit="">Operative</option>');
+			$('#board_maintenancestate').append('<option title="Maintenance" value="maintenance" data-unit="">Maintenance</option></select>');
+		}
+		else if(this.value=="connection"){
+			$('#maintenance_select_bundle')
+			.append('<div id="maintenanceconn_select_bundle" style="text-align:center;">'+
+					'<div style="width: 15%; text-align:left; display: inline-block;">'+
+						'<label>Connection</label>'+
+					'</div>'+
+					'<div style="width: 40%; text-align:center; display: inline-block;">'+
+						'<select id="board_maintenanceconn"></select>'+
+					'</div>'+
+				'</div>')
+			$('#board_maintenanceconn').empty();
+			$('#board_maintenanceconn').append('<option title="Connected" value="C" data-unit="">Connected</option>');
+			$('#board_maintenanceconn').append('<option title="Disconnected" value="D" data-unit="">Disconnected</option></select>');
+		}
+	}
+)
+
+
+$('#maintenance-board').click(function(){
+
+	loading_to_fix(); //TO BE FIXED !!!
+	document.getElementById("board_maintenance-output").innerHTML ='';
+
+	data = {}
+	maintenance_api = ""
+	conn_or_state = ""
+
+	var action_maintenance = document.getElementById("maintenance_actionlist");
+	var action = action_maintenance.options[action_maintenance.selectedIndex].value;
+	maintenance_columns = default_boardlist_columns.concat(["state", "status"])
+
+	if(action == "--") { alert("Select a maintenance action");	 document.getElementById('loading_bar').style.visibility='hidden';}
+	else if (action == "state"){
+		maintenance_api = action
+
+		var state = document.getElementById("board_maintenancestate");
+		conn_or_state = state.options[state.selectedIndex].value
+
+		data.state = conn_or_state
+	}
+	else if(action == "connection"){
+		maintenance_api = "conn_status"
+
+		var conn = document.getElementById("board_maintenanceconn");
+		conn_or_state = conn.options[conn.selectedIndex].value
+
+		data.status = conn_or_state
+	}
+
+	if(action != "--"){
+		if ($('#maintenance_project').is(':checked')){
+			var project_id = getCookie("selected_prj");
+			if(action == "connection"){
+				alert("Change connection status per project is not yet implemented!")
+				document.getElementById('loading_bar').style.visibility='hidden';
+			}
+			else{
+				$.ajax({
+					url: s4t_api_url+"/projects/"+project_id+"/boards/"+maintenance_api,
+					type: "PATCH",
+					dataType: 'json',
+					headers: ajax_headers,
+					data: JSON.stringify(data),
+
+					success: function(response){
+						refresh_tableboards("boardmaintenance_tableboards", "remove", null, maintenance_columns);
+						refresh_lists();
+
+						//New output with link to request_id
+						//var subject = "/projects/"+project_id+"/plugins/conf";
+						var subject = response.subject;
+						document.getElementById("board_maintenance-output").innerHTML = 'Request ID: <a data-reveal-id="modal-show-project-requests" id="'+response.req_id+'" value="'+subject+'" onclick=populate_request_info(this)>'+response.req_id+'</a>';
+						document.getElementById('loading_bar').style.visibility='hidden';
+					},
+					error: function(response){
+						verify_token_expired(response.responseJSON.message, response.responseJSON.result);
+						document.getElementById('loading_bar').style.visibility='hidden';
+						document.getElementById("board_maintenance-output").innerHTML = JSON.stringify(response.responseJSON.message)+"<br />";
+					}
+				});
+			}
+		}
+		else{
+			return_array = get_selected_rows_from_table("boardmaintenance_tableboards", "remove");
+
+			headers = return_array[0];
+			variables = return_array[1];
+
+			if(variables.length == 0){
+				alert('No board(s) are selected!');
+				document.getElementById('loading_bar').style.visibility='hidden';
+			}
+			else{
+				for(var i=0; i< variables.length; i++){
+					//---------------------------------------------------------------------------------
+					(function(i){
+						setTimeout(function(){
+							//---------------------------------------------------------------------------------
+							var board_id = variables[i][1];
+							var board_name = variables[i][0];
+
+							$.ajax({
+								url: s4t_api_url+"/boards/"+board_id+"/"+maintenance_api,
+								type: "PATCH",
+								dataType: 'json',
+								headers: ajax_headers,
+								data: JSON.stringify(data),
+
+								success: function(response){
+									if(i==variables.length-1) {
+										refresh_tableboards("boardmaintenance_tableboards", "remove", null, maintenance_columns);
+										refresh_lists();
+										document.getElementById('loading_bar').style.visibility='hidden';
+									}
+									document.getElementById("board_maintenance-output").innerHTML += board_name +": "+ JSON.stringify(response.message)+"<br />";
+								},
+								error: function(response){
+									verify_token_expired(response.responseJSON.message, response.responseJSON.result);
+									if(i==variables.length-1) {
+										refresh_tableboards("boardmaintenance_tableboards", "remove", null, maintenance_columns);
+										document.getElementById('loading_bar').style.visibility='hidden';
+									}
+									document.getElementById("board_maintenance-output").innerHTML += board_name +": "+JSON.stringify(response.responseJSON.message)+"<br />";
+								}
+							});
+							//---------------------------------------------------------------------------------
+						},delay*i);
+					})(i);
+					//---------------------------------------------------------------------------------
+				}
+			}
+		}
 	}
 });
 
@@ -1135,8 +1322,6 @@ $('#action-board').click(function(){
 			});
 		}
 		else{
-
-
 			//NEW: table approach
 			return_array = get_selected_rows_from_table("boardaction_tableboards", "remove");
 
@@ -1311,7 +1496,6 @@ function refresh_tableboards(table_id, action, board_status, columns) {
 			else
 				parsed_response = parse_json_fields(fields_to_show, response.message, false);
 
-
 			parsed_response = parsed_response.sort(SortByLabel);
 			create_table_from_json(table_id, parsed_response, fields_to_show, action);
 		},
@@ -1419,12 +1603,12 @@ function hideall_except(sel_div_id){
 }
 
 
-
 function close_popup(a){
 	var array = $(a).attr('id').split('clsbtn');
 
 	$("#pop-up"+array[1]).hide();
 }
+
 
 function trigger_hover(a){
 	var array = $(a).attr('id').split('trigger');
@@ -1446,12 +1630,88 @@ function trigger_hover(a){
 }
 
 
+$('#change_status').click(function(){
+
+	loading_to_fix(); //TO BE FIXED !!!
+
+	board_id = $("#info-uuid-hidden").val();
+	data = {}
+	data.state = $('#info_change_status option:selected').val();
+	
+	$.ajax({
+		url: s4t_api_url+"/boards/"+board_id+"/state",
+		type: "PATCH",
+		dataType: 'json',
+		headers: ajax_headers,
+		data: JSON.stringify(data),
+
+		success: function (response) {
+			
+			document.getElementById('loading_bar').style.visibility='hidden';
+
+			/*
+			if(data.state == "registered")
+				alert("Status changed to: Operative\n\n"+response.message)
+			else
+				alert("Status changed to: "+data.state.ucfirst()+"\n\n"+response.message)
+			*/
+			alert("Status changed to: "+data.state.ucfirst()+"\n\n"+response.message)
+			
+			refresh_lists();
+		},
+		error: function(response){
+			document.getElementById('loading_bar').style.visibility='hidden';
+			verify_token_expired(response.responseJSON.message, response.responseJSON.result);
+			alert("ERROR: "+response)
+		}
+	});
+})
+
+
+$('#change_conn_status').click(function(){
+
+	loading_to_fix(); //TO BE FIXED !!!
+
+	board_id = $("#info-uuid-hidden").val();
+	data = {}
+	data.status = $('#info_connection_status option:selected').val();
+	
+	$.ajax({
+		url: s4t_api_url+"/boards/"+board_id+"/conn_status",
+		type: "PATCH",
+		dataType: 'json',
+		headers: ajax_headers,
+		data: JSON.stringify(data),
+
+		success: function (response) {
+			
+			document.getElementById('loading_bar').style.visibility='hidden';
+
+			if(data.status == "C")
+				alert("Connection changed to: Connected")
+			else if(data.status == "D")
+				alert("Connection changed to: Disconnected")
+			
+			refresh_lists();
+		},
+		error: function(response){
+			document.getElementById('loading_bar').style.visibility='hidden';
+			verify_token_expired(response.responseJSON.message, response.responseJSON.result);
+			alert("ERROR: "+response)
+		}
+	});
+})
+
+
 function populate_board_info(board_id, flag){
 //function populate_board_info(data){
 	//$('#sensors_on_board').empty();
 
 	$('#info-connectivity-details').empty()
 	$('#sensors_validity').empty();
+
+	$('#info_change_status').empty()
+	$('#info_connection_status').empty()
 
 	//CUSTOMIZED
 	//-------------------------------------------------
@@ -1493,6 +1753,27 @@ function populate_board_info(board_id, flag){
 
 				if(info.status == "C")  conn_status = "Last connection: "
 				else if(info.status == "D")  conn_status = "Last disconnection: "
+
+				//Board status (maintenance)
+				if(info.state == "registered") state = "operative";
+				else	state = info.state
+				$('#info_change_status').append('<option title="New" value="new" data-unit="">New</option>');
+				$('#info_change_status').append('<option title="Operative" value="operative" data-unit="">Operative</option>');
+				$('#info_change_status').append('<option title="Maintenance" value="maintenance" data-unit="">Maintenance</option>');
+				if(state == "operative")
+					$('#info_change_status').val("operative")
+				else
+					$('#info_change_status').val(state)
+
+				//Force conneciton status
+				$('#info_connection_status').append('<option title="Connected" value="C" data-unit="">Connected</option>');
+				$('#info_connection_status').append('<option title="Disconnected" value="D" data-unit="">Disconnected</option>');
+				if(info.status == "C")
+					$('#info_connection_status').val("C")
+				else
+					$('#info_connection_status').val("D")
+
+
 
 				//Connectivities
 				var connectivities = ["ethernet", "mobile", "wifi"]
@@ -1546,15 +1827,19 @@ function populate_board_info(board_id, flag){
 
 				$('#info_extras_json').text(JSON.stringify(info.extra, undefined, 4));
 
+				$('#info-title').html('Board Information: <b>'+info.label+'</b>');
 
 				$('#info-detail_label').html('<h5><b>Details</b></h5>');
 				$('#info-label').html('<b>Label: </b>'+info.label);
 				$('#info-uuid').html('<b>ID: </b>'+info.board_id);
+				$('#info-uuid-hidden').val(info.board_id)
 				$('#info-description_label').html('<b>Description</b>');
 				$('#info-description').text(info.description);
 
 
 				$('#info-status_label').html('<h5><b>Status</b></h5>');
+				$('#info-state').html('<b>State: </b>'+state);
+				$('#info-statetime').html('<b>State Time: </b>'+info.statetime);
 				$('#info-lr_version').html('<b>Lightning-rod version: </b>'+label_lr);
 				$('#info-conn-time').html('<b>'+conn_status+'</b>'+info.conn_time);
 
@@ -1579,7 +1864,8 @@ function populate_board_info(board_id, flag){
 				$('#info-lon').html('<b>Longitude: </b>'+info.coordinates.longitude);
 				$('#info-alt').html('<b>Altitude: </b>'+info.coordinates.altitude);
 				$('#info-timestamp').html('<b>Updated: </b>'+info.coordinates.timestamp);
-				boardinfo_map(info.status, info.coordinates.latitude, info.coordinates.longitude);
+				//boardinfo_map(info.status, info.coordinates.latitude, info.coordinates.longitude);
+				boardinfo_map(info.status, info.state, info.coordinates.latitude, info.coordinates.longitude);
 
 				//if(info.mobile == 1)		document.getElementById("info_mobile_enabled").checked = true;
 				//if(info.net_enabled == 1)	document.getElementById("info_net_enabled").checked = true;
@@ -1697,7 +1983,7 @@ function populate_board_info(board_id, flag){
 						//create_table_from_json("info_tableplugins", plugins, null);
 
 						//Subset of fields
-						var fields_to_show = ["name", "version", "id", "category", "state"];
+						var fields_to_show = ["name", "version", "id", "category", "state", "latest_change", "on_maintenance"];
 						create_table_from_json("info_tableplugins", plugins, fields_to_show);
 					}
 				}
@@ -1904,7 +2190,7 @@ function populate_board_info(board_id, flag){
 				//----------------------------------------------------------------------------------------------------------
 			},
 			error: function(response){
-console.log("ERROR");
+				console.log("ERROR");
 				verify_token_expired(response.responseJSON.message, response.responseJSON.result);
 				//alert('ERROR: '+JSON.stringify(response));
 			}

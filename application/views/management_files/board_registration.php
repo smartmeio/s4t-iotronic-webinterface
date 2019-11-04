@@ -17,7 +17,11 @@ limitations under the License.
 
 <div id="modal-board-info" class="reveal-modal" data-reveal>
 	<a class="close-reveal-modal" aria-label="Close">&#215;</a>
-	<h3>Board Information</h3>
+
+	<input type="hidden" id="info-uuid-hidden" value="">
+
+	<!--<h3>Board Information</h3>-->
+	<h3><div id="info-title"></div></h3>
 	<table class="table_info">
 	<tr>
 		<td style="width: 20%; overflow-y: scroll;">
@@ -43,6 +47,7 @@ limitations under the License.
 					<? endif ?>
 
 					<li><a href="#" onclick='hideall_except("info-extras")'>Extra Info</a></li>
+					<li><a href="#" onclick='hideall_except("info-maintenance")'>Maintenance</a></li>
 
 					<!-- CUSTOMIZED -->
 					<? if ($GLOBALS['wiotp_endpoints'] != "{}" && $this -> config -> item('load_sensor_management')): ?>
@@ -110,6 +115,8 @@ limitations under the License.
 					<div style="text-align:left; margin-bottom: 15px;">
 						<div style="width: 49%; text-align:left; vertical-align: top; display: inline-block;">
 							<div id="info-status_label"></div>
+							<div id="info-state"></div>
+							<div id="info-statetime"></div>
 							<div id="info-lr_version"></div>
 							<div id="info-conn-time"></div>
 							<!--<div id="info-connectivity"></div>-->
@@ -225,7 +232,30 @@ limitations under the License.
 				<div id="info-extras">
 					<textarea id="info_extras_json" placeholder="" name="" rows="20" readonly></textarea>
 				</div>
-
+				<div id="info-maintenance">
+					<div style="text-align:center;">
+						<div style="width: 49%; text-align:center; display: inline-block; vertical-align: middle;">
+							<label>Change Status (Actual is:)</label>
+							<select id="info_change_status"></select>
+						</div>
+						<div style="width: 15%; text-align:center; display: inline-block; vertical-align: bottom;">
+							<button id="change_status" class="custom_button">
+								Change
+							</button>
+						</div>
+					</div>
+					<div style="text-align:center;">
+						<div style="width: 49%; text-align:center; display: inline-block; vertical-align: middle;">
+							<label>Force Connection Status (Actual is:)</label>
+							<select id="info_connection_status"></select>
+						</div>
+						<div style="width: 15%; text-align:center; display: inline-block; vertical-align: bottom;">
+							<button id="change_conn_status" class="custom_button">
+								Change
+							</button>
+						</div>
+					</div>
+				</div>
 				<!-- CUSTOMIZED -->
 				<div id="info-sensors">
 					<div id="sensors_section">
@@ -580,7 +610,6 @@ limitations under the License.
 </div>
 
 
-
 <div id="modal-update-board" class="reveal-modal small" data-reveal>
 	<section>
 		<h3>Update Board</h3>
@@ -824,6 +853,49 @@ limitations under the License.
 	<fieldset>
 		<legend>Output</legend>
 		<p id="board_action-output" />
+	</fieldset>
+</div>
+
+
+<div id="modal-maintenance-board" class="reveal-modal small" data-reveal>
+	<section>
+		<h3>Board Maintenance</h3>
+		<a class="close-reveal-modal" aria-label="Close">&#215;</a>
+		<div class="row">
+
+			<div id="maintenance_select_bundle" style="text-align:center;">
+				<div style="width: 15%; text-align:left; display: inline-block;">
+					<label>Actions</label>
+				</div>
+				<div style="width: 40%; text-align:center; display: inline-block;">
+					<select id="maintenance_actionlist"></select>
+				</div>
+			</div>
+
+			<div style="text-align:center;">
+				<div style="width: 49%; margin-top: 5px; text-align:center; vertical-align: top; display: inline-block;">
+					<label>Enable / Disable per project action</label>
+				</div>
+				<div class="switch round small" style="margin-bottom: 0px; width: 15%; text-align:center; display: inline-block;">
+					<input id="maintenance_project" class="flag_project" type="checkbox" />
+					<label for="maintenance_project"></label>
+				</div>
+			</div>
+			<div id="maintenance_boardlist_bundle">
+				<table id="boardmaintenance_tableboards" style="width: 100%"></table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 columns">
+				<button id="maintenance-board" class="custom_button">
+					Execute
+				</button>
+			</div>
+		</div>
+	</section>
+	<fieldset>
+		<legend>Output</legend>
+		<p id="board_maintenance-output" />
 	</fieldset>
 </div>
 

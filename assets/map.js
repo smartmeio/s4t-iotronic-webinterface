@@ -64,6 +64,7 @@ var last_update = [];
 
 var marker_pathfile = site_url+"uploads/marker-icon.png";
 var marker_pathfile_green = site_url+"uploads/marker-icon-green.png";
+var marker_pathfile_green_m = site_url+"uploads/marker-icon-maintenance-green.png";
 var marker_pathfile_red = site_url+"uploads/marker-icon-red.png";
 
 
@@ -75,6 +76,12 @@ var marker_red = L.icon({
 
 var marker_green = L.icon({
 	iconUrl: marker_pathfile_green,
+	iconAnchor:[12.5, 41],
+	shadowUrl: site_url+'assets/images/marker-shadow.png'
+});
+
+var marker_green_m = L.icon({
+	iconUrl: marker_pathfile_green_m,
 	iconAnchor:[12.5, 41],
 	shadowUrl: site_url+'assets/images/marker-shadow.png'
 });
@@ -107,7 +114,12 @@ function refresh_map(){
 		board_status = boards_list[i].status;
 		var marker = L.marker([latitude[i], longitude[i]]);
 
-		if(board_status == "C") marker.setIcon(marker_green);
+		if(board_status == "C"){
+			if(boards_list[i].state == "maintenance")
+				marker.setIcon(marker_green_m);
+			else
+				marker.setIcon(marker_green);
+		}
 		else if(board_status == "D") marker.setIcon(marker_red);
 		else marker.setIcon(marker_blue);
 
@@ -129,8 +141,12 @@ function refresh_map(){
 		        }
 
 			var img = '<img src="'+site_url+'uploads/blue-circle.png" width=10 height=10>';
-			if(boards_list[sel].status == "C")
-				img = '<img src="'+site_url+'uploads/green-circle.png" width=10 height=10>';
+			if(boards_list[sel].status == "C"){
+				if(boards_list[sel].state == "maintenance")
+					img = '<img src="'+site_url+'uploads/green-maintenance-circle.png" width=10 height=10>';
+				else
+					img = '<img src="'+site_url+'uploads/green-circle.png" width=10 height=10>';		
+			}
 			else if(boards_list[sel].status == "D")
 				img = '<img src="'+site_url+'uploads/red-circle.png" width=10 height=10>';
 
@@ -213,7 +229,8 @@ function refresh_map(){
 
 
 
-function boardinfo_map(board_status, lat, lng){
+//function boardinfo_map(board_status, lat, lng){
+function boardinfo_map(board_status, board_state, lat, lng){
 	info_map.setView([lat,lng], 6);
 	info_map.invalidateSize();
 	document.getElementById('info-map').style.display = 'block';
@@ -227,7 +244,12 @@ function boardinfo_map(board_status, lat, lng){
 	//var boardinfo_markers = L.markerClusterGroup({ disableClusteringAtZoom: 17 });
 	//var boardinfo_marker = L.marker([lat, lng]);
 
-	if(board_status == "C") boardinfo_marker.setIcon(marker_green);
+	if(board_status == "C") {
+		if(board_state == "maintenance")
+			boardinfo_marker.setIcon(marker_green_m);
+		else
+			boardinfo_marker.setIcon(marker_green);
+	}
 	else if(board_status == "D") boardinfo_marker.setIcon(marker_red);
 	else boardinfo_marker.setIcon(marker_blue);
 
@@ -248,8 +270,13 @@ function boardinfo_map(board_status, lat, lng){
 		}
 
 		var img = '<img src="'+site_url+'uploads/red-circle.png" width=10 height=10>';
-		if(boards_list[sel].status == "C")
-			img = '<img src="'+site_url+'uploads/green-circle.png" width=10 height=10>';
+
+		if(boards_list[sel].status == "C"){
+			if(boards_list[sel].state == "maintenance")
+				img = '<img src="'+site_url+'uploads/green-maintenance-circle.png" width=10 height=10>';
+			else
+				img = '<img src="'+site_url+'uploads/green-circle.png" width=10 height=10>';
+		}
 
 		var open_popup = '<div>';
 

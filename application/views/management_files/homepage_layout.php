@@ -150,6 +150,7 @@ limitations under the License.
 						<li><a data-reveal-id="modal-action-board">Actions on board</a></li>
 						<li><a data-reveal-id="modal-update-pkg-board">Package Manager</a></li>
 						<li><a data-reveal-id="modal-updatelr-board">Update Lightning-rod</a></li>
+						<li><a data-reveal-id="modal-maintenance-board">Maintenance</a></li>
 					</ul>
 				</li>
 				<li class="has-submenu"><a href="#">Users</a>
@@ -267,7 +268,7 @@ limitations under the License.
 									<li>
 										<a class="side-menu">
 											<img src="<?= $this -> config -> site_url() ?>assets/images/foundation_svgs/fi-cloud.svg" >
-											<label>Services</label>
+											<label>Service</label>
 										</a>
 										<ul>
 											<li><a data-reveal-id="modal-show-services">Show</a></li>
@@ -290,12 +291,14 @@ limitations under the License.
 										<ul>
 											<li><a data-reveal-id="modal-startstop-plugin">Actions</a></li>
 											<li><a data-reveal-id="modal-inject-plugin">Inject</a></li>
+											<li><a data-reveal-id="modal-configure-plugin">Configuration</a></li>
 											<li><a data-reveal-id="modal-changetag-plugin">Change Status</a></li>
 											<!-- <li><a data-reveal-id="modal-call-plugin">Call</a></li> -->
 											<li><a data-reveal-id="modal-board-plugins">Show board plugins</a></li>
 											<li><a data-reveal-id="modal-remove-plugins">Remove from board</a></li>
 											<li><a data-reveal-id="modal-remove-plugin">Remove from boards</a></li>
-											<li><a data-reveal-id="modal-show-plugins">Show</a></li>
+											<li><a data-reveal-id="modal-update-plugins">Update</a></li>
+											<li><a data-reveal-id="modal-show-plugins">List</a></li>
 											<li><a data-reveal-id="modal-show-plugin-logs">Show Logs</a></li>
 											<li><a data-reveal-id="modal-create-plugin">Create</a></li>
 											<li><a data-reveal-id="modal-destroy-plugin">Destroy</a></li>

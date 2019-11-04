@@ -23,6 +23,15 @@ limitations under the License.
 </div>
 
 
+<div id="modal-update-plugins" class="reveal-modal" data-reveal>
+	<section>
+		<h3>Plugins</h3>
+		<a class="close-reveal-modal" aria-label="Close">&#215;</a>
+		<table id="update_plugins_table" style="width: 100%"></table>
+	</section>
+</div>
+
+
 <div id="modal-show-plugin-logs" class="reveal-modal small" data-reveal>
 	<section>
 		<a class="close-reveal-modal" aria-label="Close">&#215;</a>
@@ -116,7 +125,6 @@ limitations under the License.
 </div>
 
 
-
 <div id="modal-modify-plugin" class="reveal-modal small" data-reveal>
 	<section>
 		<h3 name="info_text"></h3>
@@ -143,6 +151,19 @@ limitations under the License.
 				</div>
 			</div>
 
+			<div style="text-align:center;">
+				<div style="width: 19%; margin-top: 15px; text-align:center; vertical-align: top; display: inline-block;">
+					<label>Iotronic Dependency</label>
+				</div>
+				<div class="switch round small" style="margin-top: 12px; width: 15%; text-align:center; display: inline-block;">
+					<input id="update_plugin_dep" type="checkbox"/>
+					<label for="update_plugin_dep"></label>
+				</div>
+				<div style="width: 64%; text-align:center; vertical-align: top; display: inline-block;">
+					<textarea placeholder="" name="" rows="2" readonly="" style="width:100%">Enable in case the plugin requires to be connected to Iotronic before being started.</textarea>
+				</div>
+			</div>
+
 			<label>Description</label>
 			<textarea id="update_plugin_description" placeholder="Insert description" name="description" rows="3"></textarea>
 
@@ -158,7 +179,8 @@ limitations under the License.
 			<div class="large-12 columns">
 				<div style="text-align:center; display: block">
 					<div style="width: 45%; text-align:center; display: inline-block;">
-						<button id="back_show-plugins" class="custom_button" data-reveal-id="modal-show-plugins" style="float: none; display: inline-block;">
+						<!--<button id="back_show-plugins" class="custom_button" data-reveal-id="modal-show-plugins" style="float: none; display: inline-block;">-->
+						<button id="back_show-plugins" class="custom_button" data-reveal-id="modal-update-plugins" style="float: none; display: inline-block;">
 							Previous
 						</button>
 					</div>
@@ -211,6 +233,51 @@ limitations under the License.
 					</select>
 				</div>
 			</div>
+
+			<div style="text-align:center;">
+				<div style="width: 19%; margin-top: 15px; text-align:center; vertical-align: top; display: inline-block;">
+					<label>Iotronic Dependency</label>
+				</div>
+				<div class="switch round small" style="margin-top: 12px; width: 15%; text-align:center; display: inline-block;">
+					<input id="create_plugin_dep" type="checkbox" />
+					<label for="create_plugin_dep"></label>
+				</div>
+				<div style="width: 64%; text-align:center; vertical-align: top; display: inline-block;">
+					<textarea placeholder="" name="" rows="2" readonly="" style="width:100%">Enable in case the plugin requires to be connected to Iotronic before being started.</textarea>
+				</div>
+			</div>
+
+			<div id="create_plugin_packaging_div" style="text-align:center;">
+				<div style="width: 19%; margin-top: 15px; text-align:center; vertical-align: top; display: inline-block;">
+					<label>Packaging</label>
+				</div>
+				<div class="switch round small" style="margin-top: 12px; width: 15%; text-align:center; display: inline-block;">
+					<input id="create_plugin_packaging" type="checkbox" />
+					<label for="create_plugin_packaging"></label>
+				</div>
+				<div style="width: 64%; text-align:center; vertical-align: top; display: inline-block;">
+					<textarea placeholder="" name="" rows="2" readonly="" style="width:100%">It allows the user/owner to specify if the plugin is created using a single file or a zipped folder/bundle.</textarea>
+				</div>
+			</div>
+
+			<!--
+			<div style="text-align:center;">
+				<div style="width: 49%; text-align:center; display: inline-block;">
+					<label>Iotronic Dependency</label>
+					<select id="create_plugin_dep">
+						<option value="false">False</option>
+						<option value="true">True</option>
+					</select>
+				</div>
+				<div id="create_plugin_packaging_div" style="width: 49%; text-align:center; display: inline-block;">
+					<label>Packaging</label>
+					<select id="create_plugin_packaging">
+						<option value="single">Single</option>
+						<option value="bundle">Bundle</option>
+					</select>
+				</div>
+			</div>
+			-->
 
 			<label>Description</label>
 			<textarea id="create_plugin_description" placeholder="Insert description" name="text" rows="3"></textarea>
@@ -418,6 +485,51 @@ limitations under the License.
 				-->
 			</div>
 
+
+
+			<!-- NEW PART -->
+			<div style="text-align:center;">
+				<div style="width: 19%; margin-top: 15px; text-align:center; vertical-align: top; display: inline-block;">
+					<label>On Boot</label>
+				</div>
+				<div class="switch round small" style="margin-top: 12px; width: 15%; text-align:center; display: inline-block;">
+					<input id="inject_autostart" type="checkbox" />
+					<label for="inject_autostart"></label>
+				</div>
+				<div style="width: 64%; text-align:center; vertical-align: top; display: inline-block;">
+					<textarea placeholder="" name="" rows="2" readonly="" style="width:100%">Enable autostart of the plugin at LR boot.</textarea>
+				</div>
+			</div>
+
+			<div style="text-align:center;">
+				<div style="width: 19%; margin-top: 15px; text-align:center; vertical-align: top; display: inline-block;">
+					<label>Maintenance</label>
+				</div>
+				<div class="switch round small" style="margin-top: 12px; width: 15%; text-align:center; display: inline-block;">
+					<input id="inject_maintenance" type="checkbox" />
+					<label for="inject_maintenance"></label>
+				</div>
+				<div style="width: 64%; text-align:center; vertical-align: top; display: inline-block;">
+					<textarea placeholder="" name="" rows="2" readonly="" style="width:100%">Enable autostart of the plugin also in device maintenance mode.</textarea>
+				</div>
+			</div>
+
+			<div style="text-align:center;">
+				<div style="width: 19%; margin-top: 15px; text-align:center; vertical-align: top; display: inline-block;">
+					<label>Force</label>
+				</div>
+				<div class="switch round small" style="margin-top: 12px; width: 15%; text-align:center; display: inline-block;">
+					<input id="inject_force" type="checkbox" />
+					<label for="inject_force"></label>
+				</div>
+				<div style="width: 64%; text-align:center; vertical-align: top; display: inline-block;">
+					<textarea placeholder="" name="" rows="2" readonly="" style="width:100%">It allows to force inject the plugin into the device (overwrite).</textarea>
+				</div>
+			</div>
+			<!-- NEW PART -->
+
+
+			<!--
 			<div style="text-align:center;">
 				<div style="width: 49%; text-align:center; display: inline-block;">
 					<label>On Boot</label>
@@ -434,6 +546,7 @@ limitations under the License.
 					</select>
 				</div>
 			</div>
+			-->
 		</div>
 		<div class="row">
 			<div class="large-12 columns">
@@ -446,6 +559,40 @@ limitations under the License.
 	<fieldset>
 		<legend>Output</legend>
 		<p id="plugin_inject-output" />
+	</fieldset>
+</div>
+
+
+<div id="modal-configure-plugin" class="reveal-modal small" data-reveal>
+	<section>
+		<h3>Plugin Configuration</h3>
+		<a class="close-reveal-modal" aria-label="Close">&#215;</a>
+		<div class="row">
+
+			<div style="text-align:center;">
+				<div style="width: 49%; text-align:center; vertical-align: top; display: inline-block;">
+					<label>Enable / Disable per project configuration</label>
+				</div>
+				<div class="switch round small" style="margin-top: 5px; margin-bottom: 0px; width: 15%; text-align:center; display: inline-block;">
+					<input id="configureplugin_project" class="flag_project" type="checkbox" />
+					<label for="configureplugin_project"></label>
+				</div>
+			</div>
+			<div id="configureplugin_boardlist_bundle">
+				<table id="configureplugin_tableboards" style="width: 100%"></table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 columns">
+				<button id="configure-plugin" class="custom_button">
+					Configure
+				</button>
+			</div>
+		</div>
+	</section>
+	<fieldset>
+		<legend>Output</legend>
+		<p id="plugin_configure-output" />
 	</fieldset>
 </div>
 

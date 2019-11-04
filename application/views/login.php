@@ -20,6 +20,24 @@ limitations under the License.
 	site_url = "<?= $this -> config -> site_url()?>";
 	s4t_api_url = "<?= $this -> config -> item('s4t_api_url') ?>";
 	<?php echo 'var default_project = "'.$this -> config -> item('default_project').'";'; ?>
+
+	$(document).ready(function() {
+		var login_pass = document.getElementById("password");
+		var login_user = document.getElementById("username");
+		
+		login_pass.addEventListener("keyup", function(event) {
+			if (event.keyCode === 13) {
+				event.preventDefault();
+				document.getElementById("login_button").click();
+			}
+		});
+		login_user.addEventListener("keyup", function(event) {
+			if (event.keyCode === 13) {
+				event.preventDefault();
+				document.getElementById("login_button").click();
+			}
+		});
+	});
 </script>
 
 
@@ -38,7 +56,7 @@ limitations under the License.
 			<div style="float: right; width: 49%;">
 				Username<input type="text" id="username" name="username" value="admin">
 				Password<input type="password" id="password" name="password" value="">
-				<button class="custom_button" style="float: none" onclick="login();">Login</button>
+				<button id="login_button" class="custom_button" style="float: none" onclick="login();">Login</button>
 			</div>
 		</div>
 		<? if(isset($success) && $success == "ERROR") : ?>

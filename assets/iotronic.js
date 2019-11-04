@@ -325,6 +325,7 @@ String.prototype.ucfirst = function(){
     return this.charAt(0).toUpperCase() + this.substr(1);
 }
 
+
 function login(){
 
 	//Clear cookies (useless ??)
@@ -552,18 +553,25 @@ function refresh_lists(){
 			//$('#boardlist_c').empty();
 			//$('#boardlist_d').empty();
 
-			var connected_count = 0;
-			var disconnected_count = 0;
+			//var connected_count = 0;
+			//var disconnected_count = 0;
 			//console.log(response);
 
 			boards_list = response.message.sort(SortByStatus);
 
 			connected = [];
 			disconnected = [];
+			maintained = []
 
 			for(i=0;i<boards_list.length; i++){
-				if(boards_list[i].status == "C")
-					connected.push(boards_list[i]);
+				if(boards_list[i].status == "C"){
+
+					//We need to add also the maintained ones
+					if(boards_list[i].state == "maintenance")
+						maintained.push(boards_list[i]);
+					else
+						connected.push(boards_list[i]);
+				}
 				else if(boards_list[i].status == "D")
 					disconnected.push(boards_list[i]);
 			}
@@ -572,6 +580,7 @@ function refresh_lists(){
 			//$('#boardlist_status').empty();
 			
 			connected = connected.sort(SortByLabel);
+			maintained = maintained.sort(SortByLabel);
 			disconnected = disconnected.sort(SortByLabel);
 
 			//CUSTOMIZED
@@ -587,7 +596,9 @@ function refresh_lists(){
 				if(update_wiotp_frontend != null)
 					update_wiotp_frontend.setAttribute('href', '');
 			
-				document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+				sum_green = connected.length+maintained.length
+				//document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+				document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+sum_green+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
 
 				for(i=0;i<connected.length;i++){
 					$('#boardlist_status').append('<li>'+
@@ -599,6 +610,16 @@ function refresh_lists(){
 						'</li>');
 				}
 
+				//We need to add also the maintained ones
+				for(m=0;m<maintained.length;m++){
+					$('#boardlist_status').append('<li>'+
+						//      '<a href="#" onclick=populate_board_info("'+maintained[m].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
+						'<a href="#" onclick=populate_board_info("'+maintained[m].board_id+'"); data-reveal-id="modal-board-info">'+
+						'<img src="'+site_url+'uploads/green-maintenance-circle.png" width=20 height=20>'+
+						'<span>'+maintained[m].label+'</span>'+
+						'</a>'+
+						'</li>');
+				}
 
 				for(j=0;j<disconnected.length;j++){
 					$('#boardlist_status').append('<li>'+
@@ -614,7 +635,6 @@ function refresh_lists(){
 				refresh_map();
 			}
 
-
 	
 			//CUSTOMIZED
 			//---------------------------------------------------------------------------------------------------------------
@@ -627,12 +647,22 @@ function refresh_lists(){
 				var array_promise = [];
 				var degradated = [];
 
-				if(connected.length == 0){
+				var conn_and_maint = []
+				conn_and_maint = connected.concat(maintained)
+
+				//if(connected.length == 0){
+				if(conn_and_maint.length == 0){
+					/*
 					if(sensors_flag)
 						document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/yellow-circle.png" width=20 height=20><span> '+degradated.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
 					else
 						document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
-
+					*/
+					if(sensors_flag)
+						document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+conn_and_maint.length+'</span> / <img src="'+site_url+'uploads/yellow-circle.png" width=20 height=20><span> '+degradated.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+					else
+						document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+conn_and_maint.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+					
 					for(j=0;j<disconnected.length;j++){
 						$('#boardlist_status').append('<li>'+
 							//      '<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
@@ -647,6 +677,7 @@ function refresh_lists(){
 
 				else{
 					if(sensors_flag){
+						/*
 						for(l=0;l<connected.length;l++){
 							array_promise.push(new Promise(function(resolve){
 								//console.log("BOARD: "+connected[i].board_id);
@@ -654,28 +685,20 @@ function refresh_lists(){
 								verify_sensors_status(connected[l].board_id, connected[l].model, resolve);
 							}));
 						}
+						*/
+						for(l=0;l<conn_and_maint.length;l++){
+							array_promise.push(new Promise(function(resolve){
+								//console.log("BOARD: "+conn_and_maint[i].board_id);
+								//verify_sensors_status(conn_and_maint[l].board_id, resolve);
+								verify_sensors_status(conn_and_maint[l].board_id, conn_and_maint[l].model, resolve);
+							}));
+						}
 						Promise.all(array_promise).then(function(results){
-							//console.log(results);
-		
-							/*
-							for(i=0;i<results.length;i++){
-
-								if(results[i] != "NO WIOTP" && results[i] != "NO ACTION"){
-									for(j=0;j<connected.length;j++){
-										if(connected[j].board_id == results[i]){
-											degradated.push(connected[j]);
-											connected.splice(j, 1);
-											break;
-										}
-									}
-								}
-							}
-							*/
-
 
 							for(i=0;i<results.length;i++){
 								//if(results[i].status != "NO WIOTP" && results[i].status != "NO ACTION"){
 								//if(results[i].status == "CHECKED" || results[i].status == "NO ACTION"){
+									/*
 									for(j=0;j<connected.length;j++){
 										if(connected[j].board_id == results[i].board_id){
 
@@ -686,6 +709,23 @@ function refresh_lists(){
 											if(results[i].status == "CHECKED" || results[i].valid == false){
 												degradated.push(connected[j]);
 												connected.splice(j, 1);
+											}
+											break
+										}
+									}
+									*/
+
+									//We need to check also in the maintained ones
+									for(m=0;m<conn_and_maint.length;m++){
+										if(conn_and_maint[m].board_id == results[i].board_id){
+
+											conn_and_maint[m].failed = results[i].failed
+											conn_and_maint[m].all = results[i].all
+
+											//if(results[i].status == "CHECKED"){
+											if(results[i].status == "CHECKED" || results[i].valid == false){
+												degradated.push(conn_and_maint[m]);
+												conn_and_maint.splice(m, 1);
 											}
 											break
 										}
@@ -703,6 +743,20 @@ function refresh_lists(){
 										'</a>'+
 										'<a href="#" onclick="populate_board_info(\''+connected[i].board_id+'\');" title="'+title+'" data-reveal-id="modal-board-info">'+
 										'&nbsp;'+connected[i].label+'</a>'+
+									      '</li>');
+							}
+
+							//We need to add also the maintained ones
+							for(m=0;m<maintained.length;m++){
+
+								title = "All: "+maintained[m].all+"\n"+"Failed: "+maintained[m].failed;
+
+								$('#boardlist_status').append('<li>' +
+										'<a href="#" onclick="populate_board_info(\''+maintained[m].board_id+'\', \'true\');" title="'+title+'" data-reveal-id="modal-board-info">'+
+											'<img src="'+site_url+'uploads/green-maintenance-circle.png" width=20 height=20>'+
+										'</a>'+
+										'<a href="#" onclick="populate_board_info(\''+maintained[m].board_id+'\');" title="'+title+'" data-reveal-id="modal-board-info">'+
+										'&nbsp;'+maintained[m].label+'</a>'+
 									      '</li>');
 							}
 
@@ -729,7 +783,10 @@ function refresh_lists(){
 									      '</li>');
 							}
 
-							document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/yellow-circle.png" width=20 height=20><span> '+degradated.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+							//document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/yellow-circle.png" width=20 height=20><span> '+degradated.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+
+							sum_green = connected.length+maintained.length 
+							document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+sum_green+'</span> / <img src="'+site_url+'uploads/yellow-circle.png" width=20 height=20><span> '+degradated.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
 
 							//refresh_map();
 
@@ -746,6 +803,17 @@ function refresh_lists(){
 							      '</li>');
 						}
 
+						//We need to add also the maintained ones
+						for(m=0;m<maintained.length;m++){
+
+							$('#boardlist_status').append('<li>' +
+								'<a href="#" onclick="populate_board_info(\''+maintained[m].board_id+'\', \'true\');" data-reveal-id="modal-board-info">'+
+									'<img src="'+site_url+'uploads/green-maintenance-circle.png" width=20 height=20>'+
+								'</a>'+
+								'<a href="#" onclick="populate_board_info(\''+maintained[m].board_id+'\');" data-reveal-id="modal-board-info">'+'&nbsp;'+maintained[m].label+'</a>'+
+							      '</li>');
+						}
+
 						for(j=0;j<disconnected.length;j++){
 							$('#boardlist_status').append('<li>'+
 								// 	  '<a href="#" onclick=populate_board_info("'+disconnected[j].board_id+'"); data-reveal-id="modal-plugins_sensors-lists">'+
@@ -755,7 +823,10 @@ function refresh_lists(){
 							      '</li>');
 						}
 
-						document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+						//document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+connected.length+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
+
+						sum_green = connected.length+maintained.length
+						document.getElementById("boards_status").innerHTML = '<font size="4"><b>Boards (<img src="'+site_url+'uploads/green-circle.png" width=20 height=20><span> '+sum_green+'</span> / <img src="'+site_url+'uploads/red-circle.png" width=20 height=20><span> '+disconnected.length+'</span>)</b></font><br /><br />';
 						//refresh_map();
 					}
 					refresh_map();
@@ -942,7 +1013,7 @@ function create_table_from_json(table_id, obj, array, checkbox_name){
 
 	//To add space just after the table
 	var div_id = $('#'+table_id).closest("div")[0].id;
-	$('#'+div_id).css('margin-bottom', '20px');
+	if(div_id) $('#'+div_id).css('margin-bottom', '20px');
 
 	//To correcty render the DataTable (ordered or not)
 	if(column_to_order == 0){
@@ -1162,7 +1233,6 @@ $('.side-menu').mouseover(function(){
 
 	return false;
 });
-
 
 
 $(document).ready(function() {

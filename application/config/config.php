@@ -30,7 +30,7 @@ $config['load_statistics_management'] = FALSE; //CUSTOMIZED es. Grafana
 
 //Third-party services flags
 $config['mobile_api_flag'] = FALSE; //SIM mobile manager webpage
-$config['log_manager_flag'] = FALSE; //Log manager es. LogAnalyzer
+$config['log_manager_flag'] = TRUE; //Log manager es. LogAnalyzer
 
 
 $statistics_url_frontend='';
@@ -47,7 +47,7 @@ $config['security'] = 'password';
 
 //Software versions
 //-------------------------------------------------------------------------
-$dash_version = '2.3.9';
+$dash_version = '2.3.10';
 $iotronic_version = '2.3.6';
 $lr_version = '2.3.7';
 $wstun_version = '1.0.11';

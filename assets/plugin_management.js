@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-var fields_to_show = ["id", "name", "category", "version", "type_id", "tag_id", "updated_at", "created_at"];
+var fields_to_show = ["id", "name", "category", "version", "type_id", "tag_id", "updated_at", "created_at", "iotronic_dep"] //, "packaging"]
 var actual_version = null;
 var global_plugins_list = [];
 var show_plugins_list = [];
@@ -29,12 +29,33 @@ $('[data-reveal-id="modal-show-plugins"]').on('click',
 
 			success: function(response){
 				response.message = response.message.sort(SortByName);
-console.log(response.message);
-				//var fields_to_show = ["id", "name", "category", "version", "type_id", "tag_id", "updated_at", "created_at"];
 
-				parsed_response = customize_plugin_table(fields_to_show, response.message, "modal-modify-plugin");
+				parsed_response = customize_plugin_table(fields_to_show, response.message);
 				create_table_from_json("show_plugins_table", parsed_response, fields_to_show);
 				//create_table_from_json("show_plugins_table", response.message, null);
+			},
+			error: function(response){
+				verify_token_expired(response.responseJSON.message, response.responseJSON.result);
+			}
+		});
+	}
+);
+
+
+$('[data-reveal-id="modal-update-plugins"]').on('click',
+	function() {
+		$.ajax({
+			url: s4t_api_url+"/plugins",
+			type: "GET",
+			dataType: 'json',
+			headers: ajax_headers,
+
+			success: function(response){
+				response.message = response.message.sort(SortByName);
+
+				parsed_response = customize_plugin_table(fields_to_show, response.message, "modal-modify-plugin");
+				create_table_from_json("update_plugins_table", parsed_response, fields_to_show);
+				//create_table_from_json("update_plugins_table", response.message, null);
 			},
 			error: function(response){
 				verify_token_expired(response.responseJSON.message, response.responseJSON.result);
@@ -99,7 +120,7 @@ $('[data-reveal-id="modal-show-plugin-logs"]').on('click',
 function customize_plugin_table(fields_to_show, response_message, reveal_id){
 	
 	parsed_response = parse_json_fields(fields_to_show, response_message, false);
-	
+
 	for(var i=0; i<parsed_response.length; i++){
 		if(parsed_response[i].type_id == "1")
 			parsed_response[i].type_id = "NodeJS";
@@ -110,8 +131,9 @@ function customize_plugin_table(fields_to_show, response_message, reveal_id){
 			parsed_response[i].tag_id = "Unreleased";
 		else if(parsed_response[i].tag_id == "1")
 			parsed_response[i].tag_id = "Released";
-	
-		parsed_response[i].name = '<a data-reveal-id="'+reveal_id+'" id="'+parsed_response[i].id+'" onclick=populate_plugin_info(this)>'+parsed_response[i].name+'</a>';
+
+		if(reveal_id)	
+			parsed_response[i].name = '<a data-reveal-id="'+reveal_id+'" id="'+parsed_response[i].id+'" onclick=populate_plugin_info(this)>'+parsed_response[i].name+'</a>';
 	}
 	return parsed_response;
 }
@@ -173,6 +195,11 @@ function populate_plugin_info(a){
 			targetModal.find('[name=description]').val(info.description);
 			targetModal.find('[name=parameters]').val(info.defaults);
 			targetModal.find('[name=code]').val(info.code);
+
+			if(info.iotronic_dep == "false")
+				targetModal.find('[id=update_plugin_dep]').prop('checked', false);
+			else
+				targetModal.find('[id=update_plugin_dep]').prop('checked', true);
 		},
 		error: function(response){
 			verify_token_expired(response.responseJSON.message, response.responseJSON.result);
@@ -309,11 +336,11 @@ $("select[class^='plugin_']").on('change', function(){
 		}
 	}
 
-	show_plugins_list = filter_plugins_list(type, category);
+	show_plugins_list = filter_plugins_list(type, category, true);
 	//console.log(show_plugins_list);
 
 	if(array[1] != "name"){
-		refresh_plugins_unique_names(section+"_name", show_plugins_list);
+		refresh_plugins_unique_names(section+"_name", show_plugins_list, true);
 		refresh_cloud_pluginsv2(section+"_pluginlist", show_plugins_list);
 	}
 	else
@@ -321,12 +348,28 @@ $("select[class^='plugin_']").on('change', function(){
 });
 
 
-function filter_plugins_list(type, category){
-	var filtered_plugins_list = global_plugins_list;
+function filter_plugins_list(type, category, released){
 	var tmp_list = [];
-
-	if(type == "--" && category == "--"){
+	
+	//BUG FIXED: we need to show only the released plugin names
+	//FROM
+	//var filtered_plugins_list = global_plugins_list;
+	//TO
+	var filtered_plugins_list = []
+	if(released){
+		for(var i=0; i<global_plugins_list.length; i++){
+			if(global_plugins_list[i].tag_id == 1){
+				filtered_plugins_list.push(global_plugins_list[i])
+			}
+		}
+	}
+	else
 		filtered_plugins_list = global_plugins_list;
+	
+	if(type == "--" && category == "--"){
+		//BUG FIXED: we need to show only the released plugin names
+		if(!released)
+			filtered_plugins_list = global_plugins_list;
 	}
 	else{
 		if(type != "--"){
@@ -348,7 +391,7 @@ function filter_plugins_list(type, category){
 }
 
 
-function refresh_plugins_unique_names(select_id, plugins_list){
+function refresh_plugins_unique_names(select_id, plugins_list, released){
 
 	var names = [];
 	$('#'+select_id).empty();
@@ -356,8 +399,23 @@ function refresh_plugins_unique_names(select_id, plugins_list){
 
 	$.each(plugins_list, function(index, value){
 		if($.inArray(value.name, names) == -1){
-			names.push(value.name);
-			$('#'+select_id).append('<option value="'+value.name+'" class="'+value.category+'">'+value.name+'</option>');
+			//BUG FIXED: we need to show only the released plugin names
+			//FROM
+			//names.push(value.name);
+			//$('#'+select_id).append('<option value="'+value.name+'" class="'+value.category+'">'+value.name+'</option>');
+
+			//TO
+			//Show only the released plugins
+			if(released){
+				if(value.tag_id == 1){
+					names.push(value.name);
+					$('#'+select_id).append('<option value="'+value.name+'" class="'+value.category+'">'+value.name+'</option>');
+				}
+			}
+			else{
+				names.push(value.name);
+				$('#'+select_id).append('<option value="'+value.name+'" class="'+value.category+'">'+value.name+'</option>');
+			}
 		}
 	});
 }
@@ -399,8 +457,7 @@ function getall_cloud_plugins(select_id, released){
 				global_plugins_list = response.message.sort(SortByName);
 				//console.log(global_plugins_list);
 
-				for(i=0; i<response.message.length; i++)
-{
+				for(i=0; i<response.message.length; i++){
 					//Show only the released plugins
 					if(released){
 						if(response.message[i].tag_id == 1)
@@ -411,7 +468,7 @@ function getall_cloud_plugins(select_id, released){
 						$('#'+select_id).append('<option value="'+response.message[i].id+'" class="'+response.message[i].category+'">'+response.message[i].name+' [V: '+response.message[i].version+']</option>');
 				}
 
-				refresh_plugins_unique_names(section+"_name", global_plugins_list);
+				refresh_plugins_unique_names(section+"_name", global_plugins_list, released);
 			}
 		},
 		error: function(response){
@@ -424,7 +481,7 @@ function getall_cloud_plugins(select_id, released){
 
 function refresh_tableplugins(table_id, action, board_id, reveal_id) {
 	//$('#' + select_id).empty();
-
+console.log("REFRESH TABLE PLUGINS")
 	if(board_id != null) url = s4t_api_url + "/boards/"+board_id+"/plugins";
 	else url = s4t_api_url + "/plugins/";
 
@@ -441,8 +498,15 @@ function refresh_tableplugins(table_id, action, board_id, reveal_id) {
 				parsed_response = customize_plugin_table(fields_to_show, response.message, reveal_id);
 				create_table_from_json(table_id, parsed_response, null, action);
 			}
-			else
-				create_table_from_json(table_id, response.message, null, action);
+			else{
+				//BUG FIXING: mismatch in the visualization of the columns of the table "plugins_remove_table"
+				//FROM
+				//create_table_from_json(table_id, response.message, null, action);
+				//TO
+				var local_fields_to_show = ["name", "version", "id", "category", "state"];
+				parsed_response = parse_json_fields(local_fields_to_show, response.message, false);
+				create_table_from_json(table_id, parsed_response, local_fields_to_show, "remove");
+			}
 		},
 		error: function (response) {
 			verify_token_expired(response.responseJSON.message, response.responseJSON.result);
@@ -469,6 +533,14 @@ function clean_plugin_fields(form_name, flag_output){
 
 $('[data-reveal-id="modal-create-plugin"]').on('click',
 	function() {
+		//TO BE REMOVED (and remove id on the php file)
+		$('#create_plugin_packaging_div').hide();
+
+		//$('#create_plugin_dep').val('false');
+		//$('#create_plugin_packaging').val('single');
+		$("#create_plugin_dep").prop('checked', false);
+		$("#create_plugin_packaging").prop('checked', false);
+
 		$('#plugin_userfile').val('');
 		$('#plugin_paramfile').val('');
 		clean_plugin_fields("create_plugin", true);
@@ -522,8 +594,28 @@ $('[data-reveal-id="modal-inject-plugin"]').on('click',
 		//NEW: table approach
 		refresh_tableboards("inject_tableboards", "remove", "C", default_boardlist_columns);
 
-		$("#inject_autostart").val("false");
-		$("#inject_force").val("false");
+		//$("#inject_autostart").val("false");
+		//$("#inject_force").val("false");
+
+		$("#inject_autostart").prop('checked', false);
+		$("#inject_maintenance").prop('checked', false);
+		$("#inject_force").prop('checked', false);
+	}
+);
+
+
+$('[data-reveal-id="modal-configure-plugin"]').on('click',
+	function(){
+		document.getElementById("plugin_configure-output").innerHTML ='';
+
+		$('#configureplugin_project').prop('checked', false);
+		$('#configureplugin_boardlist_bundle').show();
+
+		//OLD: select approach
+		//update_boardsv2('configure_boardlist', 'C', true);
+
+		//NEW: table approach
+		refresh_tableboards("configureplugin_tableboards", "remove", "C", default_boardlist_columns);
 	}
 );
 
@@ -748,6 +840,12 @@ $('#create_plugin').click(function(){
 	var plugin_parameters = document.getElementById("create_plugin_parameters").value;
 	var plugin_description = document.getElementById("create_plugin_description").value;
 	var plugin_code = document.getElementById("create_plugin_code").value;
+
+	//var plugin_dep = document.getElementById("create_plugin_dep").value;
+	//var plugin_packaging = document.getElementById("create_plugin_packaging").value;
+	var plugin_dep = $('#create_plugin_dep').prop('checked').toString();
+	var plugin_packaging = $('#create_plugin_packaging').prop('checked').toString();
+
 	document.getElementById("plugin_create-output").innerHTML ='';
 
 	var array_version = plugin_version.split('.');
@@ -776,6 +874,11 @@ $('#create_plugin').click(function(){
 		data.version = plugin_version;
 		data.type = plugin_type;
 		data.description = plugin_description;
+
+		data.iotronic_dep = plugin_dep;
+		//TO BE REPLACED AS COMMENTED BELOW
+		data.packaging = "single";
+		//data.packaging = plugin_packaging;
 
 		$.ajax({
 			url: s4t_api_url+"/plugins",
@@ -927,12 +1030,14 @@ $('#update_plugin').click(function(){
 	//console.log(flag_version+ "---> OLD: "+actual_version+" NEW: "+plugin_version);
 	//console.log(MD5(plugin_code)+"\n"+plugin_checksum);
 
+	var iotronic_dependency = $('#update_plugin_dep').is(':checked')
+
 	url = "";
 	data.name = plugin_name;
 	data.version = plugin_version;
 	data.description = plugin_description;
 	data.code = plugin_code;
-
+	data.iotronic_dep = iotronic_dependency
 
 	var flag_action = false;
 	var post_or_patch = false; //false = post; true = patch
@@ -1091,8 +1196,13 @@ $('#inject_plugin').click(function(){
 		data = {};
 
 		data.plugin = plugin_id;
-		data.onboot = document.getElementById("inject_autostart").value;
-		data.force = document.getElementById("inject_force").value;
+
+		//data.onboot = document.getElementById("inject_autostart").value;
+		//data.force = document.getElementById("inject_force").value;
+
+		data.onboot = $('#inject_autostart').prop('checked').toString();
+		data.on_maintenance = $('#inject_maintenance').prop('checked').toString();
+		data.force = $('#inject_force').prop('checked').toString();
 
 		if ($('#inject_project').is(':checked')){
 
@@ -1231,6 +1341,100 @@ $('#inject_plugin').click(function(){
 				//---------------------------------------------------------------------------------
 			}
 			*/
+		}
+	}
+});
+
+
+$('#configure-plugin').click(function(){
+
+	loading_to_fix(); //TO BE FIXED !!!
+
+	document.getElementById("plugin_configure-output").innerHTML ='';
+
+	data = {};
+
+	if ($('#configureplugin_project').is(':checked')){
+		var project_id = getCookie("selected_prj");
+
+		$.ajax({
+			url: s4t_api_url+"/projects/"+project_id+"/plugins_conf",
+			type: "PUT",
+			dataType: 'json',
+			headers: ajax_headers,
+			data: JSON.stringify(data),
+
+			success: function(response){
+				document.getElementById('loading_bar').style.visibility='hidden';
+
+				//Old output without link to request_id
+				//document.getElementById("plugin_configure-output").innerHTML = JSON.stringify(response.message);
+
+				//New output with link to request_id
+				//var subject = "/projects/"+project_id+"/plugins/conf";
+				var subject = response.subject;
+				document.getElementById("plugin_configure-output").innerHTML = 'Request ID: <a data-reveal-id="modal-show-project-requests" id="'+response.req_id+'" value="'+subject+'" onclick=populate_request_info(this)>'+response.req_id+'</a>';
+				document.getElementById('loading_bar').style.visibility='hidden';
+
+				refresh_lists();
+			},
+			error: function(response){
+				document.getElementById('loading_bar').style.visibility='hidden';
+				verify_token_expired(response.responseJSON.message, response.responseJSON.result);
+				document.getElementById("plugin_configure-output").innerHTML = JSON.stringify(response.responseJSON.message);
+			}
+		});
+	}
+	else{
+
+		//NEW: table approach
+		return_array = get_selected_rows_from_table("configureplugin_tableboards", "remove");
+
+		headers = return_array[0];
+		variables = return_array[1];
+
+		if(variables.length == 0){
+			alert('No board(s) selected!');
+			document.getElementById('loading_bar').style.visibility='hidden';
+		}
+		else{
+			for(var i=0; i< variables.length; i++){
+				//---------------------------------------------------------------------------------
+				(function(i){
+					setTimeout(function(){
+						//---------------------------------------------------------------------------------
+						var board_id = variables[i][1];
+						var board_name = variables[i][0];
+
+						$.ajax({
+							url: s4t_api_url+"/boards/"+board_id+"/plugins_conf",
+							type: 'PUT',
+							dataType: 'json',
+							headers: ajax_headers,
+							data: JSON.stringify(data),
+
+							success: function(response){
+								if(i==variables.length-1) {
+									//refresh_tableboards("configureplugin_tableboards", "remove", "C", default_boardlist_columns);
+									refresh_lists();
+									document.getElementById('loading_bar').style.visibility='hidden';
+								}
+								document.getElementById("plugin_configure-output").innerHTML += board_name +": " + JSON.stringify(response.message)+"<br />";
+							},
+							error: function(response){
+								verify_token_expired(response.responseJSON.message, response.responseJSON.result);
+								if(i==variables.length-1) {
+									//refresh_tableboards("configureplugin_tableboards", "remove", "C", default_boardlist_columns);
+									document.getElementById('loading_bar').style.visibility='hidden';
+								}
+								document.getElementById("plugin_configure-output").innerHTML += board_name +": " + JSON.stringify(response.responseJSON.message)+"<br />";
+							}
+						});
+						//---------------------------------------------------------------------------------
+					},delay*i);
+				})(i);
+				//---------------------------------------------------------------------------------
+			}
 		}
 	}
 });
