@@ -82,9 +82,9 @@ limitations under the License.
 					<td><?= $GLOBALS['wamp_port'] ?></td>
 				</tr>
 				<tr>
-					<td>WS</td>
-					<td><?= $GLOBALS['ws_endpoint_url'] ?></td>
-					<td><?= $GLOBALS['ws_port'] ?></td>
+					<td>WSTUN</td>
+					<td><?= $GLOBALS['wstun_endpoint_url'] ?></td>
+					<td><?= $GLOBALS['wstun_port'] ?></td>
 				</tr>
 			</tbody>
 		</table>

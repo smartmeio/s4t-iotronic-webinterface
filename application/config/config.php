@@ -9,11 +9,11 @@ $default_api_address = '<IP_OR_HOSTNAME>:<PORT>';
 $default_iotronic_address = '<IP_OR_HOSTNAME>';
 $default_wstun_address = '<IP_OR_HOSTNAME>';
 
-//Endpoints (WAMP & WS)
+//Endpoints (WAMP & WSTUN)
 $GLOBALS['wamp_endpoint_url'] = '<WAMP_URL>';
 $GLOBALS['wamp_port'] = '<WAMP_PORT>';
-$GLOBALS['ws_endpoint_url'] = '<WS_URL>';
-$GLOBALS['ws_port'] = '<WS_PORT>';
+$GLOBALS['wstun_endpoint_url'] = '<WSTUN_URL>';
+$GLOBALS['wstun_port'] = '<WSTUN_PORT>';
 
 //Default project 
 $config['default_project'] = 'Admin';
