@@ -63,6 +63,34 @@ limitations under the License.
 ?>
 
 
+<div id="modal-show-endpoints" class="reveal-modal small" data-reveal>
+	<section>
+		<a class="close-reveal-modal" aria-label="Close">&#215;</a>
+		<h3 style="text-align: center">Cloud Endpoints</h3>
+		<table style="width: 100%">
+			<thead>
+				<tr>
+					<th>Service</th>
+					<th>Url</th>
+					<th>Port</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>WAMP</td>
+					<td><?= $GLOBALS['wamp_endpoint_url'] ?></td>
+					<td><?= $GLOBALS['wamp_port'] ?></td>
+				</tr>
+				<tr>
+					<td>WS</td>
+					<td><?= $GLOBALS['ws_endpoint_url'] ?></td>
+					<td><?= $GLOBALS['ws_port'] ?></td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+</div>
+
 <div id="modal-show-info" class="reveal-modal small" data-reveal>
 	<section>
 		<a class="close-reveal-modal" aria-label="Close">&#215;</a>
@@ -191,7 +219,12 @@ limitations under the License.
 					</ul>
 				</li>
 				<!-- CUSTOMIZED -->
-				<? if ($this -> config -> item('load_statistics_management') || $this -> config -> item('log_manager_flag') || $this -> config -> item('mobile_api_flag') || $this -> config -> item('load_sensor_management')): ?>
+				<? if (
+					($this -> config -> item('load_statistics_management') && $grafana_frontend != "") || 
+					($this -> config -> item('log_manager_flag') && $log_manager_frontend != "") || 
+					($this -> config -> item('mobile_api_flag') && $GLOBALS['mobile_api'] != "{}") || 
+					$this -> config -> item('load_sensor_management')
+				): ?>
 				<li class="has-submenu"><a href="#">Cloud</a>
 					<ul class="left-submenu">
 						<li class="back"><a href="#">Back</a></li>
@@ -223,6 +256,7 @@ limitations under the License.
 				<li><label>Support</label></li>
 				<li><a target="_blank" href="http://stack4things.unime.it/">Stack4Things</a></li>
 				<li><a target="_blank" href="<?= $this -> config -> item('swagger_url')?>">API</a></li>
+				<li><a data-reveal-id="modal-show-endpoints">Endpoints</a></li>
 				<li><a data-reveal-id="modal-show-info">Info & Credits</a></li>
 			</ul>
 		</aside>
